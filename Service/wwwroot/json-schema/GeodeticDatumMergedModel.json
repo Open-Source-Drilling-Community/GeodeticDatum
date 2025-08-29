@@ -1,0 +1,1189 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ModelShared (Service)",
+    "description": "Data model containing model dependencies of the clients of the current microservice (WebApp, ServiceTest)",
+    "version": "1.0"
+  },
+  "paths": {
+    "/GeodeticConversionSet": {
+      "get": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "GetAllGeodeticConversionSetId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "PostGeodeticConversionSet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeodeticConversionSet/MetaInfo": {
+      "get": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "GetAllGeodeticConversionSetMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeodeticConversionSet/{id}": {
+      "get": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "GetGeodeticConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeodeticConversionSet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "PutGeodeticConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticConversionSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "DeleteGeodeticConversionSetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeodeticConversionSet/LightData": {
+      "get": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "GetAllGeodeticConversionSetLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeodeticConversionSetLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeodeticConversionSet/HeavyData": {
+      "get": {
+        "tags": [
+          "GeodeticConversionSet"
+        ],
+        "operationId": "GetAllGeodeticConversionSet",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeodeticConversionSet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeodeticDatum": {
+      "get": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "GetAllGeodeticDatumId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "PostGeodeticDatum",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeodeticDatum/MetaInfo": {
+      "get": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "GetAllGeodeticDatumMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeodeticDatum/{id}": {
+      "get": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "GetGeodeticDatumById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeodeticDatum"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "PutGeodeticDatumById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodeticDatum"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "DeleteGeodeticDatumById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/GeodeticDatum/LightData": {
+      "get": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "GetAllGeodeticDatumLight",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeodeticDatumLight"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeodeticDatum/HeavyData": {
+      "get": {
+        "tags": [
+          "GeodeticDatum"
+        ],
+        "operationId": "GetAllGeodeticDatum",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeodeticDatum"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Spheroid": {
+      "get": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "GetAllSpheroidId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "PostSpheroid",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Spheroid/MetaInfo": {
+      "get": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "GetAllSpheroidMetaInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Spheroid/{id}": {
+      "get": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "GetSpheroidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Spheroid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "PutSpheroidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Spheroid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "DeleteSpheroidById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Spheroid/HeavyData": {
+      "get": {
+        "tags": [
+          "Spheroid"
+        ],
+        "operationId": "GetAllSpheroid",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Spheroid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/UsageStatistics": {
+      "get": {
+        "tags": [
+          "UsageStatistics"
+        ],
+        "operationId": "GetUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStatistics"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CountPerDay": {
+        "type": "object",
+        "properties": {
+          "Date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Count": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CountPerDay"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "UsageStatistics": {
+        "type": "object",
+        "properties": {
+          "LastSaved": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "BackUpInterval": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "GetAllSpheroidIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllSpheroidMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetSpheroidByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllSpheroidPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostSpheroidPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutSpheroidByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteSpheroidByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticDatumIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticDatumMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetGeodeticDatumByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticDatumLightPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticDatumPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostGeodeticDatumPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutGeodeticDatumByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteGeodeticDatumByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticConversionSetIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticConversionSetMetaInfoPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetGeodeticConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticConversionSetLightPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "GetAllGeodeticConversionSetPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PostGeodeticConversionSetPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "PutGeodeticConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          },
+          "DeleteGeodeticConversionSetByIdPerDay": {
+            "$ref": "#/components/schemas/History"
+          }
+        }
+      },
+      "GeodeticConversionSet": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "GeodeticDatum": {
+            "$ref": "#/components/schemas/GeodeticDatum"
+          },
+          "OctreeBounds": {
+            "$ref": "#/components/schemas/Bounds"
+          },
+          "GeodeticCoordinates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeodeticCoordinate"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "GeodeticConversionSetLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "GeodeticDatumName": {
+            "type": "string",
+            "nullable": true
+          },
+          "GeodeticDatumDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GeodeticCoordinate": {
+        "type": "object",
+        "properties": {
+          "LatitudeWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LongitudeWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VerticalDepthWGS84": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LatitudeDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "LongitudeDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "VerticalDepthDatum": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "OctreeDepth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "OctreeCode": {
+            "$ref": "#/components/schemas/OctreeCodeLong"
+          }
+        }
+      },
+      "GeodeticDatum": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "IsDefault": {
+            "type": "boolean"
+          },
+          "Spheroid": {
+            "$ref": "#/components/schemas/Spheroid"
+          },
+          "DeltaX": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "DeltaY": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "DeltaZ": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "RotationX": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "RotationY": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "RotationZ": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "ScaleFactor": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          }
+        }
+      },
+      "GeodeticDatumLight": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "IsDefault": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Spheroid": {
+        "type": "object",
+        "properties": {
+          "MetaInfo": {
+            "$ref": "#/components/schemas/MetaInfo"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "LastModificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "IsDefault": {
+            "type": "boolean"
+          },
+          "SemiMajorAxis": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsSemiMajorAxisSet": {
+            "type": "boolean"
+          },
+          "SemiMinorAxis": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsSemiMinorAxisSet": {
+            "type": "boolean"
+          },
+          "Eccentricity": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsEccentricitySet": {
+            "type": "boolean"
+          },
+          "SquaredEccentricity": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsSquaredEccentricitySet": {
+            "type": "boolean"
+          },
+          "Flattening": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsFlatteningSet": {
+            "type": "boolean"
+          },
+          "InverseFlattening": {
+            "$ref": "#/components/schemas/ScalarDrillingProperty"
+          },
+          "IsInverseFlatteningSet": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ScalarDrillingProperty": {
+        "type": "object",
+        "properties": {
+          "DiracDistributionValue": {
+            "$ref": "#/components/schemas/DiracDistribution"
+          }
+        }
+      },
+      "MetaInfo": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "HttpHostName": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpHostBasePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HttpEndPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Point3D": {
+        "type": "object",
+        "properties": {
+          "X": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Y": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Z": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "Bounds": {
+        "type": "object",
+        "properties": {
+          "MinX": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxX": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinY": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxY": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MinZ": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MaxZ": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "MiddleX": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "MiddleY": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "MiddleZ": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "IntervalX": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "IntervalY": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "IntervalZ": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "Center": {
+            "$ref": "#/components/schemas/Point3D"
+          }
+        }
+      },
+      "OctreeCodeLong": {
+        "type": "object",
+        "properties": {
+          "Depth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CodeHigh": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "CodeLow": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "DiracDistribution": {
+        "type": "object",
+        "properties": {
+          "MinValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "MaxValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "Value": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

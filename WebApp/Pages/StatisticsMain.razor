@@ -1,0 +1,332 @@
+﻿@page "/Statistics"
+@inject ILogger<StatisticsMain> logger
+@inject ISnackbar Snackbar
+
+@if (statistics_ == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div hidden="@isHiddenMainPanel">
+        <MudText Class="mt-4 mb-4" Typo="Typo.h5"><strong>Usage Statistics</strong></MudText>
+        <div style="width: 90%; margin: auto">
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.h6">Total count:</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1">@totalCount_</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.h6">Spheroid count:</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1">@spheroidCount_</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.h6">Geodetic Datum count:</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1">@geodeticDatumCount_</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.h6">Geodetic Conversion Set count:</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1">@geodeticConversionSetCount_</MudText>
+                </MudItem>
+            </MudGrid>
+        </div>
+    </div>
+}
+
+@code {
+    private UsageStatistics statistics_ = null;
+    private long totalCount_ = 0;
+    private long spheroidCount_ = 0;
+    private long geodeticDatumCount_ = 0;
+    private long geodeticConversionSetCount_ = 0;
+
+    private bool isHiddenMainPanel = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            statistics_ = await APIUtils.ClientGeodeticDatum.GetUsageStatisticsAsync();
+            if (statistics_ != null)
+            {
+                totalCount_ = 0;
+                spheroidCount_ = 0;
+                geodeticDatumCount_ = 0;
+                geodeticConversionSetCount_ = 0;
+
+                if (statistics_.GetAllSpheroidIdPerDay != null && statistics_.GetAllSpheroidIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllSpheroidIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllSpheroidMetaInfoPerDay != null && statistics_.GetAllSpheroidMetaInfoPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllSpheroidMetaInfoPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetSpheroidByIdPerDay != null && statistics_.GetSpheroidByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetSpheroidByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllSpheroidPerDay != null && statistics_.GetAllSpheroidPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllSpheroidPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.PostSpheroidPerDay != null && statistics_.PostSpheroidPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PostSpheroidPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.PutSpheroidByIdPerDay != null && statistics_.PutSpheroidByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PutSpheroidByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.DeleteSpheroidByIdPerDay != null && statistics_.DeleteSpheroidByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.DeleteSpheroidByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            spheroidCount_ += count.Count;
+                        }
+                    }
+                }
+
+                if (statistics_.GetAllGeodeticDatumIdPerDay != null && statistics_.GetAllGeodeticDatumIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticDatumIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticDatumMetaInfoPerDay != null && statistics_.GetAllGeodeticDatumMetaInfoPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticDatumMetaInfoPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetGeodeticDatumByIdPerDay != null && statistics_.GetGeodeticDatumByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetGeodeticDatumByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticDatumLightPerDay != null && statistics_.GetAllGeodeticDatumLightPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticDatumLightPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticDatumPerDay != null && statistics_.GetAllGeodeticDatumPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticDatumPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.PostGeodeticDatumPerDay != null && statistics_.PostGeodeticDatumPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PostGeodeticDatumPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.PutGeodeticDatumByIdPerDay != null && statistics_.PutGeodeticDatumByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PutGeodeticDatumByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+
+                if (statistics_.DeleteGeodeticDatumByIdPerDay != null && statistics_.DeleteGeodeticDatumByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.DeleteGeodeticDatumByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticDatumCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticConversionSetIdPerDay != null && statistics_.GetAllGeodeticConversionSetIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticConversionSetIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticConversionSetMetaInfoPerDay != null && statistics_.GetAllGeodeticConversionSetMetaInfoPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticConversionSetMetaInfoPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetGeodeticConversionSetByIdPerDay != null && statistics_.GetGeodeticConversionSetByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetGeodeticConversionSetByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticConversionSetLightPerDay != null && statistics_.GetAllGeodeticConversionSetLightPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticConversionSetLightPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.GetAllGeodeticConversionSetPerDay != null && statistics_.GetAllGeodeticConversionSetPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.GetAllGeodeticConversionSetPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.PostGeodeticConversionSetPerDay != null && statistics_.PostGeodeticConversionSetPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PostGeodeticConversionSetPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+
+                if (statistics_.PutGeodeticConversionSetByIdPerDay != null && statistics_.PutGeodeticConversionSetByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.PutGeodeticConversionSetByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+                if (statistics_.DeleteGeodeticConversionSetByIdPerDay != null && statistics_.DeleteGeodeticConversionSetByIdPerDay.Data != null)
+                {
+                    foreach (CountPerDay count in statistics_.DeleteGeodeticConversionSetByIdPerDay.Data)
+                    {
+                        if (count != null)
+                        {
+                            totalCount_ += count.Count;
+                            geodeticConversionSetCount_ += count.Count;
+                        }
+                    }
+                }
+            }
+            // Show main panel
+            isHiddenMainPanel = false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem UsageStatistics initialization");
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+}

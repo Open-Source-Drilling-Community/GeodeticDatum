@@ -1,0 +1,268 @@
+﻿@page "/GeodeticDatum"
+@inject ILogger<GeodeticDatumMain> logger
+@inject ISnackbar Snackbar
+
+<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
+                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    @if (geodeticDatumList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div hidden="@isHiddenMainPanel">
+            <MudDataGrid T="GeodeticDatum" MultiSelection="true" Items="@geodeticDatumList" SelectedItemsChanged="@SelectedItemsChanged"
+                         EditMode="DataGridEditMode.Cell"
+                         Hover="true" RowClick="@RowClicked"
+                         SortMode="SortMode.Multiple" QuickFilter="@_geodeticDatumFilter" Filterable="false"
+                         ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Geodetic Datum</MudText>
+                    <MudButton OnClick="@AddGeodeticDatum" Color="@Color.Success" Class="add-item-btn">Add</MudButton>
+                    <MudButton OnClick="@DeleteSelectedGeodeticDatum" Color="@Color.Error" Class="add-item-btn">Delete</MudButton>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <SelectColumn T="GeodeticDatum" />
+                    <PropertyColumn Property="x => x.Name" Title="@DataUtils.GeodeticDatumNameLabel" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.Description" Title="@DataUtils.GeodeticDatumDescrLabel" CellStyle="width: 60%;" Sortable="true" Editable="false" />
+                    <TemplateColumn CellStyle="width: 5%;">
+                        <EditTemplate>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(() => DeleteGeodeticDatum(context.Item.MetaInfo.ID))" />
+                        </EditTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="GeodeticDatum" />
+                </PagerContent>
+            </MudDataGrid>
+        </div>
+    }
+    @if (isHiddenMainPanel && currentGeodeticDatum != null)
+    {
+        <GeodeticDatumEdit CurrentGeodeticDatum="@currentGeodeticDatum" Spheroids="@spheroidList" OnUpdate="@ShowMainPanel" />
+    }
+</MudUnitAndReferenceChoiceTag>
+
+@code {
+    // GeodeticDatum related variables
+    private List<GeodeticDatum> geodeticDatumList = new();
+    private List<GeodeticDatum> selectedGeodeticDatumList = new();
+    private List<Spheroid> spheroidList = new();
+    private GeodeticDatum? currentGeodeticDatum;
+    private List<object?>? inputDataList = new(); // container used to pass input data to the GeodeticDatumEdit razor component without specifying content types (required by µservice Template)
+    // MyBaseData related variables
+    // UI related variables
+    public bool isHiddenMainPanel;
+    public bool isHiddenEditPanel;
+    private string? _searchString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Show main panel
+            isHiddenMainPanel = false;
+            isHiddenEditPanel = true;
+            currentGeodeticDatum = null;
+
+            // Starting all loading tasks asynchronously
+            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + APIUtils.HostNameGeodeticDatum);
+            var geodeticDatumTask = APIUtils.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
+            var spheroidTask = APIUtils.ClientGeodeticDatum.GetAllSpheroidAsync();
+
+            List<Task> loadingTaskList = new List<Task> { geodeticDatumTask, spheroidTask };
+
+            // Awaiting tasks and retrieve results as they become available
+            while (loadingTaskList.Count > 0)
+            {
+                Task finishedTask = await Task.WhenAny(loadingTaskList);
+                if (finishedTask == geodeticDatumTask)
+                {
+                    try
+                    {
+                        geodeticDatumList = (List<GeodeticDatum>)await geodeticDatumTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (geodeticDatumList != null)
+                        {
+                            geodeticDatumList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of GeodeticDatum were null on initialization");
+                            Snackbar.Add("Returned list of GeodeticDatum were null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load GeodeticDatum from client");
+                    }
+                }
+                else if (finishedTask == spheroidTask)
+                {
+                    try
+                    {
+                        List<Spheroid>? spheroids = (List<Spheroid>)await spheroidTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (spheroids != null)
+                        {
+                            spheroidList = spheroids;
+                            spheroidList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Spheroid were null on initialization");
+                            Snackbar.Add("Returned list of Spheroid were null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Spheroid from client");
+                    }
+                }
+                loadingTaskList.Remove(finishedTask);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem GeodeticDatum initialization");
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task AddGeodeticDatum()
+    {
+        try
+        {
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+            GeodeticDatum currentGeodeticDatum = new()
+                {
+                    MetaInfo = metaInfo,
+                    Name = DataUtils.DEFAULT_NAME_GeodeticDatum,
+                    Description = DataUtils.DEFAULT_DESCR_GeodeticDatum,
+                    CreationDate = creationDate,
+                    LastModificationDate = creationDate,
+
+                };
+            await APIUtils.ClientGeodeticDatum.PostGeodeticDatumAsync(currentGeodeticDatum);
+            logger.LogInformation("GeodeticDatum posted successfully");
+            Snackbar.Add("GeodeticDatum posted successfully", Severity.Success);
+            await OnInitializedAsync();
+            // Find the newly created datum in the refreshed list
+            var addedDatum = geodeticDatumList.First(d => d.MetaInfo?.ID == currentGeodeticDatum.MetaInfo?.ID);
+            if (addedDatum != null)
+            {
+                await RowClicked(new DataGridRowClickEventArgs<GeodeticDatum>(new MouseEventArgs(), addedDatum, -1));
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to add a new GeodeticDatum");
+            Snackbar.Add("Impossible to add a new GeodeticDatum", Severity.Warning);
+        }
+    }
+
+    private async Task RowClicked(DataGridRowClickEventArgs<GeodeticDatum> args)
+    {
+        await EditGeodeticDatum(args.Item.MetaInfo.ID);
+    }
+
+    private async Task EditGeodeticDatum(Guid id)
+    {
+        try
+        {
+            currentGeodeticDatum = await APIUtils.ClientGeodeticDatum.GetGeodeticDatumByIdAsync(id);
+            if (currentGeodeticDatum != null)
+            {
+                isHiddenMainPanel = true;
+                isHiddenEditPanel = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load GeodeticDatum");
+                Snackbar.Add("Impossible to load GeodeticDatum", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load GeodeticDatum to be edited");
+        }
+    }
+
+    private async Task DeleteGeodeticDatum(Guid id)
+    {
+        try
+        {
+            await APIUtils.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(id);
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to delete GeodeticDatum");
+        }
+    }
+
+    private async Task DeleteSelectedGeodeticDatum()
+    {
+        try
+        {
+            foreach (GeodeticDatum geodeticDatum in selectedGeodeticDatumList)
+            {
+                await APIUtils.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(geodeticDatum.MetaInfo.ID);
+            }
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to delete all GeodeticDatum");
+        }
+
+    }
+
+    //Quick filter - filter gobally across multiple columns with the same input
+    private Func<GeodeticDatum, bool>
+    _geodeticDatumFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if ($"{x.Name} {x.Description}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    //Events
+    private void StartedEditingItem(GeodeticDatum item)
+    {
+        //Activating Edit event capture with parameter StartedEditingItem="@StartedEditingItem" in MudDataGrid; arguments are specified in OnClick="@context.Actions.StartedEditingItem(...)"
+    }
+
+    private void CancelledEditingItem(GeodeticDatum item)
+    {
+        //Activating Cancel event capture with parameter CancelledEditingItem = "@CancelledEditingItem" in MudDataGrid; arguments are specified in OnClick="@context.Actions.CancelledEditingItem(...)"
+    }
+
+    private void CommittedItemChanges(GeodeticDatum item)
+    {
+        //Activating Commit event capture with parameter CommittedItemChanges = "@CommittedItemChanges" in MudDataGrid; arguments are specified in OnClick="@context.Actions.CommittedEditingItem(...)"
+    }
+
+    void SelectedItemsChanged(HashSet<GeodeticDatum>
+        items)
+    {
+        selectedGeodeticDatumList.Clear();
+        selectedGeodeticDatumList.InsertRange(0, items);
+    }
+
+    private async void ShowMainPanel()
+    {
+        isHiddenMainPanel = false;
+        isHiddenEditPanel = true;
+        await OnInitializedAsync();
+    }
+}

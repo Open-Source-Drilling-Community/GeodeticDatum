@@ -1,0 +1,253 @@
+﻿@page "/Spheroid"
+@inject ILogger<SpheroidMain> logger
+@inject ISnackbar Snackbar
+
+<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
+                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    @if (spheroidList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div hidden="@isHiddenMainPanel">
+            <MudDataGrid T="Spheroid" MultiSelection="true" Items="@spheroidList" SelectedItemsChanged="@SelectedItemsChanged"
+                         EditMode="DataGridEditMode.Cell"
+                         Hover="true" RowClick="@RowClicked"
+                         SortMode="SortMode.Multiple" QuickFilter="@_spheroidFilter" Filterable="false"
+                         ReadOnly="false" ColumnResizeMode="ResizeMode.Column" Elevation="0">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Spheroid</MudText>
+                    <MudButton OnClick="@AddSpheroid" Color="@Color.Success" Class="add-item-btn">Add</MudButton>
+                    <MudButton OnClick="@DeleteSelectedSpheroid" Color="@Color.Error" Class="add-item-btn">Delete</MudButton>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <SelectColumn T="Spheroid" />
+                    <PropertyColumn Property="x => x.Name" Title="@DataUtils.SpheroidNameLabel" CellStyle="width: 30%;" Sortable="true" Editable="false" />
+                    <PropertyColumn Property="x => x.Description" Title="@DataUtils.SpheroidDescrLabel" CellStyle="width: 60%;" Sortable="true" Editable="false" />
+                    <TemplateColumn CellStyle="width: 5%;">
+                        <EditTemplate>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(() => DeleteSpheroid(context.Item.MetaInfo.ID))" />
+                        </EditTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="Spheroid" />
+                </PagerContent>
+            </MudDataGrid>
+        </div>
+    }
+    @if (isHiddenMainPanel && currentSpheroid != null)
+    {
+        <SpheroidEdit CurrentSpheroid="@currentSpheroid" OnUpdate="@ShowMainPanel" />
+    }
+</MudUnitAndReferenceChoiceTag>
+
+@code {
+    // Spheroid related variables
+    private List<Spheroid> selectedSpheroidList = new();
+    private List<Spheroid> spheroidList = new();
+    private Spheroid? currentSpheroid;
+    private List<object?>? inputDataList = new(); // container used to pass input data to the SpheroidEdit razor component without specifying content types (required by µservice Template)
+    // UI related variables
+    public bool isHiddenMainPanel;
+    public bool isHiddenEditPanel;
+    private string? _searchString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Show main panel
+            isHiddenMainPanel = false;
+            isHiddenEditPanel = true;
+            currentSpheroid = null;
+
+            // Starting all loading tasks asynchronously
+            logger.LogInformation("Trying to load list of Spheroid from client: " + APIUtils.HostNameGeodeticDatum);
+            var spheroidTask = APIUtils.ClientGeodeticDatum.GetAllSpheroidAsync();
+
+            List<Task> loadingTaskList = new List<Task> { spheroidTask };
+
+            // Awaiting tasks and retrieve results as they become available
+            while (loadingTaskList.Count > 0)
+            {
+                Task finishedTask = await Task.WhenAny(loadingTaskList);
+                if (finishedTask == spheroidTask)
+                {
+                    try
+                    {
+                        List<Spheroid>? spheroids = (List<Spheroid>)await spheroidTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (spheroids != null)
+                        {
+                            spheroidList = spheroids;
+                            spheroidList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of Spheroid were null on initialization");
+                            Snackbar.Add("Returned list of Spheroid were null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load Spheroid from client");
+                    }
+                }
+                loadingTaskList.Remove(finishedTask);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem Spheroid initialization");
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task AddSpheroid()
+    {
+        try
+        {
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+            Spheroid currentSpheroid = new()
+                {
+                    MetaInfo = metaInfo,
+                    Name = DataUtils.DEFAULT_NAME_Spheroid,
+                    Description = DataUtils.DEFAULT_DESCR_Spheroid,
+                    CreationDate = creationDate,
+                    LastModificationDate = creationDate,
+                    SemiMajorAxis = new ScalarDrillingProperty()
+                    {
+                        DiracDistributionValue = new() { Value = 6378137 }
+                    },
+                    IsSemiMajorAxisSet = true,
+                    SemiMinorAxis = new ScalarDrillingProperty()
+                    {
+                        DiracDistributionValue = new() { Value = 6356752.3142 }
+                    },
+                    IsSemiMinorAxisSet = true
+                };
+            await APIUtils.ClientGeodeticDatum.PostSpheroidAsync(currentSpheroid);
+            logger.LogInformation("Spheroid posted successfully");
+            Snackbar.Add("Spheroid posted successfully", Severity.Success);
+            await OnInitializedAsync();
+            // Find the newly created datum in the refreshed list
+            var addedSpheroid = spheroidList.First(d => d.MetaInfo?.ID == currentSpheroid.MetaInfo?.ID);
+            if (addedSpheroid != null)
+            {
+                await RowClicked(new DataGridRowClickEventArgs<Spheroid>(new MouseEventArgs(), addedSpheroid, -1));
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to add a new Spheroid");
+            Snackbar.Add("Impossible to add a new Spheroid", Severity.Warning);
+        }
+    }
+
+    private async Task RowClicked(DataGridRowClickEventArgs<Spheroid> args)
+    {
+        await EditSpheroidDatum(args.Item.MetaInfo.ID);
+    }
+
+    private async Task EditSpheroidDatum(Guid id)
+    {
+        try
+        {
+            currentSpheroid = await APIUtils.ClientGeodeticDatum.GetSpheroidByIdAsync(id);
+            if (currentSpheroid != null)
+            {
+                isHiddenMainPanel = true;
+                isHiddenEditPanel = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            else
+            {
+                logger.LogWarning("Impossible to load Spheroid");
+                Snackbar.Add("Impossible to load Spheroid", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to load Spheroid to be edited");
+        }
+    }
+
+    private async Task DeleteSpheroid(Guid id)
+    {
+        try
+        {
+            await APIUtils.ClientGeodeticDatum.DeleteSpheroidByIdAsync(id);
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to delete spheroid");
+        }
+    }
+
+    private async Task DeleteSelectedSpheroid()
+    {
+        try
+        {
+            foreach (Spheroid spheroid in selectedSpheroidList)
+            {
+                await APIUtils.ClientGeodeticDatum.DeleteSpheroidByIdAsync(spheroid.MetaInfo.ID);
+            }
+            await OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Impossible to delete all spheroid");
+        }
+
+    }
+
+    //Quick filter - filter gobally across multiple columns with the same input
+    private Func<Spheroid, bool>
+    _spheroidFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if ($"{x.Name} {x.Description}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    //Events
+    private void StartedEditingItem(Spheroid item)
+    {
+        //Activating Edit event capture with parameter StartedEditingItem="@StartedEditingItem" in MudDataGrid; arguments are specified in OnClick="@context.Actions.StartedEditingItem(...)"
+    }
+
+    private void CancelledEditingItem(Spheroid item)
+    {
+        //Activating Cancel event capture with parameter CancelledEditingItem = "@CancelledEditingItem" in MudDataGrid; arguments are specified in OnClick="@context.Actions.CancelledEditingItem(...)"
+    }
+
+    private void CommittedItemChanges(Spheroid item)
+    {
+        //Activating Commit event capture with parameter CommittedItemChanges = "@CommittedItemChanges" in MudDataGrid; arguments are specified in OnClick="@context.Actions.CommittedEditingItem(...)"
+    }
+
+    void SelectedItemsChanged(HashSet<Spheroid> items)
+    {
+        selectedSpheroidList.Clear();
+        selectedSpheroidList.InsertRange(0, items);
+    }
+
+    private async void ShowMainPanel()
+    {
+        isHiddenMainPanel = false;
+        isHiddenEditPanel = true;
+        await OnInitializedAsync();
+    }
+}

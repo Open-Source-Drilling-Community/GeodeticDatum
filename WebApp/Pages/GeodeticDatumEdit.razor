@@ -1,0 +1,255 @@
+﻿@implements IUnitAwareComponent
+@inject ILogger<GeodeticDatumEdit> logger
+@inject ISnackbar Snackbar
+
+<MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Geodetic Datum</MudText>
+<MudContainer Class="d-flex flex-row mt-4 mb-4">
+    <MudButton Class="me-1" Variant="Variant.Filled" Color="Color.Success" OnClick="Update">Update</MudButton>
+    <MudButton Class="me-1" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+</MudContainer>
+
+<MudExpansionPanels Class="mt-4 mb-4">
+    <MudExpansionPanel Text="Description" Expanded="true">
+        <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
+            <MudTextField @bind-Value="@name" Label="Name" Variant="Variant.Filled"></MudTextField>
+            <MudTextField @bind-Value="@descr" Label="Description" Variant="Variant.Filled"></MudTextField>
+            @if (Spheroids != null && Spheroids.Count > 0)
+            {
+                <MudSelect @bind-Value="@spheroid" Label="Spheroid" Variant="Variant.Filled" ToStringFunc="@(s => s?.Name)">
+                    @foreach (var sph in Spheroids)
+                    {
+                        <MudSelectItem Value="@sph">@sph.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Delta X"
+                                       QuantityName="LengthStandard"
+                                       SIValueNullable="deltaX"
+                                       SIValueNullableChanged="@(val => deltaX = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Delta Y"
+                                       QuantityName="LengthStandard"
+                                       SIValueNullable="deltaY"
+                                       SIValueNullableChanged="@(val => deltaY = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Delta Z"
+                                       QuantityName="LengthStandard"
+                                       SIValueNullable="deltaZ"
+                                       SIValueNullableChanged="@(val => deltaZ = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Rotation X"
+                                       QuantityName="PlaneAngleDrilling"
+                                       SIValueNullable="rotationX"
+                                       SIValueNullableChanged="@(val => rotationX = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Rotation Y"
+                                       QuantityName="PlaneAngleDrilling"
+                                       SIValueNullable="rotationY"
+                                       SIValueNullableChanged="@(val => rotationY = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Rotation Z"
+                                       QuantityName="PlaneAngleDrilling"
+                                       SIValueNullable="rotationZ"
+                                       SIValueNullableChanged="@(val => rotationZ = val)" />
+            <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                       QuantityLabel="Scale Factor"
+                                       QuantityName="DimensionLessStandard"
+                                       SIValueNullable="scaleFactor"
+                                       SIValueNullableChanged="@(val => scaleFactor = val)" />
+        </MudContainer>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+@code {
+    [CascadingParameter]
+    private MudUnitAndReferenceChoiceTag? Parent { get; set; }
+
+    [Parameter]
+    public GeodeticDatum? CurrentGeodeticDatum { get; set; }
+
+    [Parameter]
+    public List<Spheroid>? Spheroids { get; set; }
+
+    [Parameter]
+    public Action? OnUpdate { get; set; }
+
+    // Local variables used to retrieve user-defined parameters
+    private Spheroid? spheroid;
+    private string? name;
+    private string? descr;
+    private double? deltaX;
+    private double? deltaY;
+    private double? deltaZ;
+    private double? rotationX;
+    private double? rotationY;
+    private double? rotationZ;
+    private double? scaleFactor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Parent == null)
+                throw new ArgumentNullException(nameof(Parent), "TargetEdit page must exist within a MudUnitAndReferenceChoiceTag");
+            Parent.Add(this);
+            ManageUnits();
+
+            if (CurrentGeodeticDatum != null && CurrentGeodeticDatum.MetaInfo != null)
+            {
+                name = CurrentGeodeticDatum.Name;
+                descr = CurrentGeodeticDatum.Description;
+                spheroid = CurrentGeodeticDatum.Spheroid;
+                if (CurrentGeodeticDatum.DeltaX != null && CurrentGeodeticDatum.DeltaX.DiracDistributionValue != null)
+                {
+                    deltaX = CurrentGeodeticDatum.DeltaX.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    deltaX = null;
+                }
+                if (CurrentGeodeticDatum.DeltaY != null && CurrentGeodeticDatum.DeltaY.DiracDistributionValue != null)
+                {
+                    deltaY = CurrentGeodeticDatum.DeltaY.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    deltaY = null;
+                }
+                if (CurrentGeodeticDatum.DeltaZ != null && CurrentGeodeticDatum.DeltaZ.DiracDistributionValue != null)
+                {
+                    deltaZ = CurrentGeodeticDatum.DeltaZ.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    deltaZ = null;
+                }
+                if (CurrentGeodeticDatum.RotationX != null && CurrentGeodeticDatum.RotationX.DiracDistributionValue != null)
+                {
+                    rotationX = CurrentGeodeticDatum.RotationX.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    rotationX = null;
+                }
+                if (CurrentGeodeticDatum.RotationY != null && CurrentGeodeticDatum.RotationY.DiracDistributionValue != null)
+                {
+                    rotationY = CurrentGeodeticDatum.RotationY.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    rotationY = null;
+                }
+                if (CurrentGeodeticDatum.RotationZ != null && CurrentGeodeticDatum.RotationZ.DiracDistributionValue != null)
+                {
+                    rotationZ = CurrentGeodeticDatum.RotationZ.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    rotationZ = null;
+                }
+                if (CurrentGeodeticDatum.ScaleFactor != null && CurrentGeodeticDatum.ScaleFactor.DiracDistributionValue != null)
+                {
+                    scaleFactor = CurrentGeodeticDatum.ScaleFactor.DiracDistributionValue.Value;
+                }
+                else
+                {
+                    scaleFactor = null;
+                }
+            }
+            else
+            {
+                logger.LogError("Current GeodeticDatum is null or badly formed");
+                Snackbar.Add("Current GeodeticDatum is null or badly formed", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem on GeodeticDatum initialization");
+            Snackbar.Add("Problem on GeodeticDatum initialization", Severity.Error);
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    public void ManageUnits()
+    {
+
+    }
+
+    private async Task Update()
+    {
+        try
+        {
+            if (CurrentGeodeticDatum != null && CurrentGeodeticDatum.MetaInfo != null)
+            {
+                if (deltaX == null || deltaY == null || deltaZ == null)
+                {
+                    logger.LogWarning("Delta X, delta Y and delta Z must be defined.");
+                    Snackbar.Add("Delta X, delta Y and delta Z must be defined.", Severity.Warning);
+                }
+                else
+                {
+                    int count = 0;
+                    if (rotationX != null)
+                    {
+                        count++;
+                    }
+                    if (rotationY != null)
+                    {
+                        count++;
+                    }
+                    if (rotationZ != null)
+                    {
+                        count++;
+                    }
+                    if (scaleFactor != null)
+                    {
+                        count++;
+                    }
+                    if (count > 0 && count < 4)
+                    {
+                        logger.LogWarning("If any of rotation x, rotation y, rotation z or scale factor are defined, all the others must be defined.");
+                        Snackbar.Add("If any of rotation x, rotation y, rotation z or scale factor are defined, all the others must be defined.", Severity.Warning);
+                    }
+                    else
+                    {
+                        GeodeticDatum geodeticDatum = new()
+                            {
+                                MetaInfo = CurrentGeodeticDatum.MetaInfo,
+                                Name = name,
+                                Description = descr,
+                                CreationDate = CurrentGeodeticDatum.CreationDate,
+                                LastModificationDate = DateTimeOffset.UtcNow,
+                                Spheroid = spheroid,
+                                DeltaX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaX } },
+                                DeltaY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaY } },
+                                DeltaZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
+                                RotationX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationX } },
+                                RotationY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationY } },
+                                RotationZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
+                                ScaleFactor = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = scaleFactor } },
+                            };
+                        await APIUtils.ClientGeodeticDatum.PutGeodeticDatumByIdAsync(CurrentGeodeticDatum.MetaInfo.ID, geodeticDatum);
+                        logger.LogInformation("Updated the GeodeticDatum successfully");
+                        Snackbar.Add("Updated the GeodeticDatum successfully", Severity.Success);
+                    }
+                }
+            }
+            else
+            {
+                logger.LogWarning("Problem while updating the GeodeticDatum");
+                Snackbar.Add("Problem while updating the GeodeticDatum", Severity.Warning);
+            }
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError(ex, "Problem while updating the GeodeticDatum");
+            Snackbar.Add("Problem while updating the GeodeticDatum", Severity.Warning);
+        }
+    }
+
+    private void Cancel()
+    {
+        OnUpdate?.Invoke();
+    }
+
+}

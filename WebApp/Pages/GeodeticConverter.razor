@@ -1,0 +1,356 @@
+﻿@page "/GeodeticConverter"
+@inject ILogger<GeodeticConverter> logger
+@inject ISnackbar Snackbar
+
+<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
+                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    @if (geodeticDatumList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <MudForm>
+            <MudPaper Class="p-4 mb-4" Elevation="2">
+                <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
+                    <MudText Typo="Typo.h6" Class="mb-2">WGS84 → Geodetic Datum</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (WGS84)"
+                                                            SIValueNullable="latitudeFromWGS84"
+                                                            SIValueNullableChanged="@(val => latitudeFromWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Latitude (WGS84)"
+                                                       SIValueNullable="latitudeFromWGS84"
+                                                       SIValueNullableChanged="@(val => latitudeFromWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Longitude (WGS84)"
+                                                            SIValueNullable="longitudeFromWGS84"
+                                                            SIValueNullableChanged="@(val => longitudeFromWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Longitude (WGS84)"
+                                                       SIValueNullable="longitudeFromWGS84"
+                                                       SIValueNullableChanged="@(val => longitudeFromWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                                       QuantityLabel="Vertical Depth (WGS84)"
+                                                       SIValueNullable="verticalDepthFromWGS84"
+                                                       SIValueNullableChanged="@(val => verticalDepthFromWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudSelect T="GeodeticDatum" Label="Target Geodetic Datum" @bind-Value="targetDatum">
+                                @foreach (var datum in geodeticDatumList)
+                                {
+                                    <MudSelectItem Value="@datum">@datum.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConvertWGS84ToDatum">Convert</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (Datum)"
+                                                            ReadOnly="true"
+                                                            SIValueNullable="latitudeToTargetDatum"
+                                                            SIValueNullableChanged="@(val => latitudeToTargetDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Latitude (Datum)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="latitudeToTargetDatum"
+                                                       SIValueNullableChanged="@(val => latitudeToTargetDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Longitude (Datum)"
+                                                            ReadOnly="true"
+                                                            SIValueNullable="longitudeToTargetDatum"
+                                                            SIValueNullableChanged="@(val => longitudeToTargetDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Longitude (Datum)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="longitudeToTargetDatum"
+                                                       SIValueNullableChanged="@(val => longitudeToTargetDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                                       QuantityLabel="Vertical Depth (Datum)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="verticalDepthToTargetDatum"
+                                                       SIValueNullableChanged="@(val => verticalDepthToTargetDatum = val)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </MudPaper>
+
+            <MudPaper Class="p-4" Elevation="2">
+                <MudText Typo="Typo.h6" Class="mb-2">Geodetic Datum → WGS84</MudText>
+                <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (Datum)"
+                                                            SIValueNullable="latitudeFromDatum"
+                                                            SIValueNullableChanged="@(val => latitudeFromDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Latitude (Datum)"
+                                                       SIValueNullable="latitudeFromDatum"
+                                                       SIValueNullableChanged="@(val => latitudeFromDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Longitude (Datum)"
+                                                            SIValueNullable="longitudeFromDatum"
+                                                            SIValueNullableChanged="@(val => longitudeFromDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Longitude (Datum)"
+                                                       SIValueNullable="longitudeFromDatum"
+                                                       SIValueNullableChanged="@(val => longitudeFromDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                                       QuantityLabel="Vertical Depth (Datum)"
+                                                       SIValueNullable="verticalDepthFromDatum"
+                                                       SIValueNullableChanged="@(val => verticalDepthFromDatum = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="GeodeticDatum" Label="Source Geodetic Datum" @bind-Value="sourceDatum">
+                                @foreach (var datum in geodeticDatumList)
+                                {
+                                    <MudSelectItem Value="@datum">@datum.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConvertDatumToWGS84">Convert</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (WGS84)"
+                                                            ReadOnly="true"
+                                                            SIValueNullable="latitudeToWGS84"
+                                                            SIValueNullableChanged="@(val => latitudeToWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Latitude (WGS84)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="latitudeToWGS84"
+                                                       SIValueNullableChanged="@(val => latitudeToWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Longitude (WGS84)"
+                                                            ReadOnly="true"
+                                                            SIValueNullable="longitudeToWGS84"
+                                                            SIValueNullableChanged="@(val => longitudeToWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                                       QuantityLabel="Decimal Longitude (WGS84)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="longitudeToWGS84"
+                                                       SIValueNullableChanged="@(val => longitudeToWGS84 = val)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="6" lg="6">
+                            <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                                       QuantityLabel="Vertical Depth (WGS84)"
+                                                       ReadOnly="true"
+                                                       SIValueNullable="verticalDepthToWGS84"
+                                                       SIValueNullableChanged="@(val => verticalDepthToWGS84 = val)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </MudPaper>
+        </MudForm>
+    }
+</MudUnitAndReferenceChoiceTag>
+
+@code {
+    // Input fields for WGS84 → Datum
+    private double? latitudeFromWGS84;
+    private double? longitudeFromWGS84;
+    private double? verticalDepthFromWGS84;
+    private GeodeticDatum? targetDatum;
+    private double? latitudeToTargetDatum;
+    private double? longitudeToTargetDatum;
+    private double? verticalDepthToTargetDatum;
+
+    // Input fields for Datum → WGS84
+    private GeodeticDatum? sourceDatum;
+    private double? latitudeFromDatum;
+    private double? longitudeFromDatum;
+    private double? verticalDepthFromDatum;
+    private double? latitudeToWGS84;
+    private double? longitudeToWGS84;
+    private double? verticalDepthToWGS84;
+
+    // List of available datums
+    private List<GeodeticDatum>? geodeticDatumList = null;
+
+    // Conversion methods
+    private void ConvertWGS84ToDatum()
+    {
+        if (latitudeFromWGS84 != null && longitudeFromWGS84 != null && verticalDepthFromWGS84 != null && targetDatum != null)
+        {
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+            GeodeticConversionSet conversionSet = new()
+            {
+                MetaInfo = metaInfo,
+                Name = DataUtils.DEFAULT_NAME_ConversionSet,
+                Description = DataUtils.DEFAULT_DESCR_ConversionSet,
+                CreationDate = creationDate,
+                LastModificationDate = creationDate,
+            };
+            conversionSet.GeodeticDatum = targetDatum;
+            conversionSet.GeodeticCoordinates = new List<GeodeticCoordinate>
+
+        {
+            new GeodeticCoordinate
+            {
+                LatitudeWGS84 = latitudeFromWGS84,
+                LongitudeWGS84 = longitudeFromWGS84,
+                VerticalDepthWGS84 = verticalDepthFromWGS84,
+            }
+        };
+            APIUtils.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
+            GeodeticConversionSet? calculatedConversionSet = APIUtils.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
+            if (calculatedConversionSet != null &&
+                calculatedConversionSet.GeodeticCoordinates != null &&
+                calculatedConversionSet.GeodeticCoordinates.Count > 0 &&
+                calculatedConversionSet.GeodeticCoordinates.ElementAt<GeodeticCoordinate>(0) != null)
+            {
+                GeodeticCoordinate calculatedCoordinate = calculatedConversionSet.GeodeticCoordinates.ElementAt<GeodeticCoordinate>(0);
+                latitudeToTargetDatum = calculatedCoordinate.LatitudeDatum;
+                longitudeToTargetDatum = calculatedCoordinate.LongitudeDatum;
+                verticalDepthToTargetDatum = calculatedCoordinate.VerticalDepthDatum;
+                logger.LogInformation("Geodetic Conversion successful");
+                Snackbar.Add("Geodetic Conversion successful", Severity.Success);
+            }
+            else
+            {
+                logger.LogWarning("The conversion failed.");
+                Snackbar.Add("The conversion failed.", Severity.Warning);
+            }
+            APIUtils.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
+        }
+        else
+        {
+            logger.LogWarning("The WGS84 latitude, longitude, vertical depth and the target geodetic datum must be filled in.");
+            Snackbar.Add("The WGS84 latitude, longitude, vertical depth and the target geodetic datum must be filled in.", Severity.Warning);
+        }
+    }
+    private void ConvertDatumToWGS84()
+    {
+        if (latitudeFromDatum != null && longitudeFromDatum != null && verticalDepthFromDatum != null && sourceDatum != null)
+        {
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            DateTimeOffset creationDate = DateTimeOffset.UtcNow;
+            GeodeticConversionSet conversionSet = new()
+            {
+                MetaInfo = metaInfo,
+                Name = DataUtils.DEFAULT_NAME_ConversionSet,
+                Description = DataUtils.DEFAULT_DESCR_ConversionSet,
+                CreationDate = creationDate,
+                LastModificationDate = creationDate,
+            };
+            conversionSet.GeodeticDatum = sourceDatum;
+            conversionSet.GeodeticCoordinates = new List<GeodeticCoordinate>
+        {
+            new GeodeticCoordinate
+            {
+                LatitudeDatum = latitudeFromDatum,
+                LongitudeDatum = longitudeFromDatum,
+                VerticalDepthDatum = verticalDepthFromDatum,
+            }
+        };
+            APIUtils.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
+            GeodeticConversionSet? calculatedConversionSet = APIUtils.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
+            if (calculatedConversionSet != null &&
+                calculatedConversionSet.GeodeticCoordinates != null &&
+                calculatedConversionSet.GeodeticCoordinates.Count > 0 &&
+                calculatedConversionSet.GeodeticCoordinates.ElementAt<GeodeticCoordinate>(0) != null)
+            {
+                GeodeticCoordinate calculatedCoordinate = calculatedConversionSet.GeodeticCoordinates.ElementAt<GeodeticCoordinate>(0);
+                latitudeToWGS84 = calculatedCoordinate.LatitudeWGS84;
+                longitudeToWGS84 = calculatedCoordinate.LongitudeWGS84;
+                verticalDepthToWGS84 = calculatedCoordinate.VerticalDepthWGS84;
+                logger.LogInformation("Geodetic Conversion successful");
+                Snackbar.Add("Geodetic Conversion successful", Severity.Success);
+            }
+            else
+            {
+                logger.LogWarning("The conversion failed.");
+                Snackbar.Add("The conversion failed.", Severity.Warning);
+            }
+            APIUtils.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
+        }
+        else
+        {
+            logger.LogWarning("The WGS84 latitude, longitude, vertical depth and the target geodetic datum must be filled in.");
+            Snackbar.Add("The WGS84 latitude, longitude, vertical depth and the target geodetic datum must be filled in.", Severity.Warning);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Starting all loading tasks asynchronously
+            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + APIUtils.HostNameGeodeticDatum);
+            var geodeticDatumTask = APIUtils.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
+
+            List<Task> loadingTaskList = new List<Task> { geodeticDatumTask };
+
+            // Awaiting tasks and retrieve results as they become available
+            while (loadingTaskList.Count > 0)
+            {
+                Task finishedTask = await Task.WhenAny(loadingTaskList);
+                if (finishedTask == geodeticDatumTask)
+                {
+                    try
+                    {
+                        geodeticDatumList = (List<GeodeticDatum>)await geodeticDatumTask; // awaiting the finished task allows to retrieve its result and throw exception if needed
+                        if (geodeticDatumList != null)
+                        {
+                            geodeticDatumList.Sort((t1, t2) => t1.Name.CompareTo(t2.Name));
+                        }
+                        else
+                        {
+                            logger.LogWarning("Returned list of GeodeticDatum were null on initialization");
+                            Snackbar.Add("Returned list of GeodeticDatum were null on initialization", Severity.Warning);
+                        }
+                    }
+                    catch (ApiException ex)
+                    {
+                        logger.LogError(ex, "Impossible to load GeodeticDatum from client");
+                    }
+                }
+                loadingTaskList.Remove(finishedTask);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem GeodeticDatum initialization");
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+}
