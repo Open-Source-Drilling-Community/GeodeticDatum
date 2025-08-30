@@ -30,7 +30,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet(Name = "GetAllGeodeticConversionSetId")]
         public ActionResult<IEnumerable<Guid>> GetAllGeodeticConversionSetId()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticConversionSetIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticConversionSetIdPerDay();
             var ids = _geodeticConversionSetManager.GetAllGeodeticConversionSetId();
             if (ids != null)
             {
@@ -49,7 +49,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("MetaInfo", Name = "GetAllGeodeticConversionSetMetaInfo")]
         public ActionResult<IEnumerable<MetaInfo>> GetAllGeodeticConversionSetMetaInfo()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticConversionSetMetaInfoPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticConversionSetMetaInfoPerDay();
             var vals = _geodeticConversionSetManager.GetAllGeodeticConversionSetMetaInfo();
             if (vals != null)
             {
@@ -69,7 +69,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("{id}", Name = "GetGeodeticConversionSetById")]
         public ActionResult<Model.GeodeticConversionSet?> GetGeodeticConversionSetById(Guid id)
         {
-            UsageStatistics.Instance.IncrementGetGeodeticConversionSetByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetGeodeticConversionSetByIdPerDay();
             if (!id.Equals(Guid.Empty))
             {
                 var val = _geodeticConversionSetManager.GetGeodeticConversionSetById(id);
@@ -95,7 +95,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("LightData", Name = "GetAllGeodeticConversionSetLight")]
         public ActionResult<IEnumerable<Model.GeodeticConversionSetLight>> GetAllGeodeticConversionSetLight()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticConversionSetLightPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticConversionSetLightPerDay();
             var vals = _geodeticConversionSetManager.GetAllGeodeticConversionSetLight();
             if (vals != null)
             {
@@ -114,7 +114,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("HeavyData", Name = "GetAllGeodeticConversionSet")]
         public ActionResult<IEnumerable<Model.GeodeticConversionSet?>> GetAllGeodeticConversionSet()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticConversionSetPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticConversionSetPerDay();
             var vals = _geodeticConversionSetManager.GetAllGeodeticConversionSet();
             if (vals != null)
             {
@@ -134,7 +134,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPost(Name = "PostGeodeticConversionSet")]
         public ActionResult PostGeodeticConversionSet([FromBody] Model.GeodeticConversionSet? data)
         {
-            UsageStatistics.Instance.IncrementPostGeodeticConversionSetPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPostGeodeticConversionSetPerDay();
             // Check if geodeticConversionSet exists in the database through ID
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID != Guid.Empty)
             {
@@ -173,7 +173,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPut("{id}", Name = "PutGeodeticConversionSetById")]
         public ActionResult PutGeodeticConversionSetById(Guid id, [FromBody] Model.GeodeticConversionSet? data)
         {
-            UsageStatistics.Instance.IncrementPutGeodeticConversionSetByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPutGeodeticConversionSetByIdPerDay();
             // Check if GeodeticConversionSet is in the data base
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID.Equals(id))
             {
@@ -210,7 +210,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpDelete("{id}", Name = "DeleteGeodeticConversionSetById")]
         public ActionResult DeleteGeodeticConversionSetById(Guid id)
         {
-            UsageStatistics.Instance.IncrementDeleteGeodeticConversionSetByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementDeleteGeodeticConversionSetByIdPerDay();
             if (_geodeticConversionSetManager.GetGeodeticConversionSetById(id) != null)
             {
                 if (_geodeticConversionSetManager.DeleteGeodeticConversionSetById(id))

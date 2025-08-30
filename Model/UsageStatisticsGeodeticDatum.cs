@@ -58,7 +58,7 @@ namespace Model
             }
         }
     }
-    public class UsageStatistics
+    public class UsageStatisticsGeodeticDatum
     {
         public static readonly string HOME_DIRECTORY = ".." + Path.DirectorySeparatorChar + "home" + Path.DirectorySeparatorChar;
 
@@ -93,9 +93,9 @@ namespace Model
 
         private static object lock_ = new object();
 
-        private static UsageStatistics? instance_ = null;
+        private static UsageStatisticsGeodeticDatum? instance_ = null;
 
-        public static UsageStatistics Instance
+        public static UsageStatisticsGeodeticDatum Instance
         {
             get
             {
@@ -114,7 +114,7 @@ namespace Model
                                 }
                                 if (!string.IsNullOrEmpty(jsonStr))
                                 {
-                                    instance_ = JsonSerializer.Deserialize<UsageStatistics>(jsonStr);
+                                    instance_ = JsonSerializer.Deserialize<UsageStatisticsGeodeticDatum>(jsonStr);
                                 }
                             }
                         }
@@ -125,7 +125,7 @@ namespace Model
                     }
                     if (instance_ == null)
                     {
-                        instance_ = new UsageStatistics();
+                        instance_ = new UsageStatisticsGeodeticDatum();
                     }
                 }
                 return instance_;

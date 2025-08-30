@@ -439,6 +439,26 @@
         }
       }
     },
+    "/GeodeticDatumUsageStatistics": {
+      "get": {
+        "tags": [
+          "GeodeticDatumUsageStatistics"
+        ],
+        "operationId": "GetUsageStatistics",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Model.UsageStatisticsGeodeticDatum"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Spheroid": {
       "get": {
         "tags": [
@@ -632,26 +652,6 @@
           }
         }
       }
-    },
-    "/UsageStatistics": {
-      "get": {
-        "tags": [
-          "UsageStatistics"
-        ],
-        "operationId": "GetUsageStatistics",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Model.UsageStatistics"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -683,7 +683,7 @@
         },
         "additionalProperties": false
       },
-      "Model.UsageStatistics": {
+      "Model.UsageStatisticsGeodeticDatum": {
         "type": "object",
         "properties": {
           "LastSaved": {

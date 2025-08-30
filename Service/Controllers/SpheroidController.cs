@@ -30,7 +30,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet(Name = "GetAllSpheroidId")]
         public ActionResult<IEnumerable<Guid>> GetAllSpheroidId()
         {
-            UsageStatistics.Instance.IncrementGetAllSpheroidIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllSpheroidIdPerDay();
             var ids = _spheroidManager.GetAllSpheroidId();
             if (ids != null)
             {
@@ -49,7 +49,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("MetaInfo", Name = "GetAllSpheroidMetaInfo")]
         public ActionResult<IEnumerable<MetaInfo>> GetAllSpheroidMetaInfo()
         {
-            UsageStatistics.Instance.IncrementGetAllSpheroidMetaInfoPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllSpheroidMetaInfoPerDay();
             var vals = _spheroidManager.GetAllSpheroidMetaInfo();
             if (vals != null)
             {
@@ -69,7 +69,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("{id}", Name = "GetSpheroidById")]
         public ActionResult<Model.Spheroid?> GetSpheroidById(Guid id)
         {
-            UsageStatistics.Instance.IncrementGetSpheroidByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetSpheroidByIdPerDay();
             if (!id.Equals(Guid.Empty))
             {
                 var val = _spheroidManager.GetSpheroidById(id);
@@ -95,7 +95,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("HeavyData", Name = "GetAllSpheroid")]
         public ActionResult<IEnumerable<Model.Spheroid?>> GetAllSpheroid()
         {
-            UsageStatistics.Instance.IncrementGetAllSpheroidPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllSpheroidPerDay();
             var vals = _spheroidManager.GetAllSpheroid();
             if (vals != null)
             {
@@ -115,7 +115,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPost(Name = "PostSpheroid")]
         public ActionResult PostSpheroid([FromBody] Model.Spheroid? data)
         {
-            UsageStatistics.Instance.IncrementPostSpheroidPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPostSpheroidPerDay();
             // Check if spheroid exists in the database through ID
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID != Guid.Empty)
             {
@@ -154,7 +154,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPut("{id}", Name = "PutSpheroidById")]
         public ActionResult PutSpheroidById(Guid id, [FromBody] Model.Spheroid? data)
         {
-            UsageStatistics.Instance.IncrementPutSpheroidByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPutSpheroidByIdPerDay();
             // Check if Spheroid is in the data base
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID.Equals(id))
             {
@@ -191,7 +191,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpDelete("{id}", Name = "DeleteSpheroidById")]
         public ActionResult DeleteSpheroidById(Guid id)
         {
-            UsageStatistics.Instance.IncrementDeleteSpheroidByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementDeleteSpheroidByIdPerDay();
             if (_spheroidManager.GetSpheroidById(id) != null)
             {
                 if (_spheroidManager.DeleteSpheroidById(id))

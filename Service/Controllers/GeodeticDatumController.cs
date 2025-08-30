@@ -30,7 +30,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet(Name = "GetAllGeodeticDatumId")]
         public ActionResult<IEnumerable<Guid>> GetAllGeodeticDatumId()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticDatumIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticDatumIdPerDay();
             var ids = _geodeticDatumManager.GetAllGeodeticDatumId();
             if (ids != null)
             {
@@ -49,7 +49,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("MetaInfo", Name = "GetAllGeodeticDatumMetaInfo")]
         public ActionResult<IEnumerable<MetaInfo>> GetAllGeodeticDatumMetaInfo()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticDatumMetaInfoPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticDatumMetaInfoPerDay();
             var vals = _geodeticDatumManager.GetAllGeodeticDatumMetaInfo();
             if (vals != null)
             {
@@ -69,7 +69,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("{id}", Name = "GetGeodeticDatumById")]
         public ActionResult<Model.GeodeticDatum?> GetGeodeticDatumById(Guid id)
         {
-            UsageStatistics.Instance.IncrementGetGeodeticDatumByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetGeodeticDatumByIdPerDay();
             if (!id.Equals(Guid.Empty))
             {
                 var val = _geodeticDatumManager.GetGeodeticDatumById(id);
@@ -95,7 +95,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("LightData", Name = "GetAllGeodeticDatumLight")]
         public ActionResult<IEnumerable<Model.GeodeticDatumLight>> GetAllGeodeticDatumLight()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticDatumLightPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticDatumLightPerDay();
             var vals = _geodeticDatumManager.GetAllGeodeticDatumLight();
             if (vals != null)
             {
@@ -114,7 +114,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpGet("HeavyData", Name = "GetAllGeodeticDatum")]
         public ActionResult<IEnumerable<Model.GeodeticDatum?>> GetAllGeodeticDatum()
         {
-            UsageStatistics.Instance.IncrementGetAllGeodeticDatumPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementGetAllGeodeticDatumPerDay();
             var vals = _geodeticDatumManager.GetAllGeodeticDatum();
             if (vals != null)
             {
@@ -134,7 +134,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPost(Name = "PostGeodeticDatum")]
         public ActionResult PostGeodeticDatum([FromBody] Model.GeodeticDatum? data)
         {
-            UsageStatistics.Instance.IncrementPostGeodeticDatumPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPostGeodeticDatumPerDay();
             // Check if geodeticDatum exists in the database through ID
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID != Guid.Empty)
             {
@@ -173,7 +173,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpPut("{id}", Name = "PutGeodeticDatumById")]
         public ActionResult PutGeodeticDatumById(Guid id, [FromBody] Model.GeodeticDatum? data)
         {
-            UsageStatistics.Instance.IncrementPutGeodeticDatumByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementPutGeodeticDatumByIdPerDay();
             // Check if GeodeticDatum is in the data base
             if (data != null && data.MetaInfo != null && data.MetaInfo.ID.Equals(id))
             {
@@ -210,7 +210,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         [HttpDelete("{id}", Name = "DeleteGeodeticDatumById")]
         public ActionResult DeleteGeodeticDatumById(Guid id)
         {
-            UsageStatistics.Instance.IncrementDeleteGeodeticDatumByIdPerDay();
+            UsageStatisticsGeodeticDatum.Instance.IncrementDeleteGeodeticDatumByIdPerDay();
             if (_geodeticDatumManager.GetGeodeticDatumById(id) != null)
             {
                 if (_geodeticDatumManager.DeleteGeodeticDatumById(id))

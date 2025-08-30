@@ -12,11 +12,11 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
     [Produces("application/json")]
     [Route("[controller]")]
     [ApiController]
-    public class UsageStatisticsController : ControllerBase
+    public class GeodeticDatumUsageStatisticsController : ControllerBase
     {
         private readonly ILogger _logger;
 
-        public UsageStatisticsController(ILogger<UsageStatisticsController> logger)
+        public GeodeticDatumUsageStatisticsController(ILogger<GeodeticDatumUsageStatisticsController> logger)
         {
             _logger = logger;
         }
@@ -26,11 +26,11 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetUsageStatistics")]
-        public ActionResult<UsageStatistics> GetUsageStatistics()
+        public ActionResult<UsageStatisticsGeodeticDatum> GetUsageStatistics()
         {
-            if (UsageStatistics.Instance != null)
+            if (UsageStatisticsGeodeticDatum.Instance != null)
             {
-                return Ok(UsageStatistics.Instance);
+                return Ok(UsageStatisticsGeodeticDatum.Instance);
             }
             else
             {
