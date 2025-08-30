@@ -54,7 +54,7 @@ else
     {
         try
         {
-            statistics_ = await APIUtils.ClientGeodeticDatum.GetUsageStatisticsAsync();
+            statistics_ = await APIUtils.ClientGeodeticDatum.GetGeodeticDatumUsageStatisticsAsync();
             if (statistics_ != null)
             {
                 totalCount_ = 0;

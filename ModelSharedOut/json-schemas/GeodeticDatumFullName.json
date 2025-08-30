@@ -444,7 +444,7 @@
         "tags": [
           "GeodeticDatumUsageStatistics"
         ],
-        "operationId": "GetUsageStatistics",
+        "operationId": "GetGeodeticDatumUsageStatistics",
         "responses": {
           "200": {
             "description": "OK",

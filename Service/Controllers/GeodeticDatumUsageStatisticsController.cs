@@ -22,11 +22,11 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Controllers
         }
 
         /// <summary>
-        /// Returns the usage statistics present in the microservice database at endpoint GeodeticConversion/api/UsageStatistics
+        /// Returns the usage statistics present in the microservice database at endpoint GeodeticConversion/api/GeodeticDatumUsageStatistics
         /// </summary>
         /// <returns></returns>
-        [HttpGet(Name = "GetUsageStatistics")]
-        public ActionResult<UsageStatisticsGeodeticDatum> GetUsageStatistics()
+        [HttpGet(Name = "GetGeodeticDatumUsageStatistics")]
+        public ActionResult<UsageStatisticsGeodeticDatum> GetGeodeticDatumUsageStatistics()
         {
             if (UsageStatisticsGeodeticDatum.Instance != null)
             {
