@@ -209,7 +209,7 @@
     {
         if (latitudeFromWGS84 != null && longitudeFromWGS84 != null && verticalDepthFromWGS84 != null && targetDatum != null)
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             GeodeticConversionSet conversionSet = new()
             {
@@ -261,7 +261,7 @@
     {
         if (latitudeFromDatum != null && longitudeFromDatum != null && verticalDepthFromDatum != null && sourceDatum != null)
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             GeodeticConversionSet conversionSet = new()
             {
