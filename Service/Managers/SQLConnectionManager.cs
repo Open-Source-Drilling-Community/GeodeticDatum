@@ -119,7 +119,7 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Managers
             {
                 try
                 {
-                    string databaseFileName = HOME_DIRECTORY + Path.DirectorySeparatorChar + DATABASE_FILENAME;
+                    string databaseFileName = Path.Combine(HOME_DIRECTORY, DATABASE_FILENAME);
                     if (File.Exists(databaseFileName))
                     {
                         _logger.LogInformation("Opening database {_databaseFileName}", DATABASE_FILENAME);
