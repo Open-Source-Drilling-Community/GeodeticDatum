@@ -9,7 +9,7 @@ A .NET 8 solution providing geodetic datum computations and management via a RES
 ## Projects
 
 - Model: core types and algorithms (spheroids, datums, conversions, octree).
-- Service: ASP.NET Core API exposing CRUD and conversion endpoints; persists to SQLite under `home/`; also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent integrations.
+- Service: ASP.NET Core API exposing CRUD and conversion endpoints; persists to SQLite under `home/`; also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent integrations using the Streamable HTTP transport and `/GeodeticDatum/api/mcp/ws` for WebSockets.
 - ModelSharedOut: generator that merges OpenAPI inputs and produces a C# client + merged JSON.
 - WebApp: Blazor Server UI that consumes the Service using the generated client.
 - ModelTest: NUnit tests for Model algorithms and built-ins.
@@ -31,15 +31,50 @@ Notes
 
 ## MCP Server
 
-The Service project exposes a Model Context Protocol surface alongside the REST API. MCP clients can connect over server-sent events (`GET /GeodeticDatum/api/mcp`), WebSockets (`GET /GeodeticDatum/api/mcp/ws`), or send envelopes via HTTP POST (`POST /GeodeticDatum/api/mcp`). On handshake the server responds with the registered tools that mirror the Spheroid, GeodeticDatum, and GeodeticConversionSet CRUD endpoints and conversions, making the same functionality available to agent-style integrations.
+The Service project also exposes the Model Context Protocol. An MCP-aware client can either:
 
-Example SSE session setup:
+- Use **Streamable HTTP** at `/GeodeticDatum/api/mcp`
+- Or connect through **WebSockets** at `/GeodeticDatum/api/mcp/ws`
 
-```bash
-curl -N \
-  -H "Accept: text/event-stream" \
-  "http://localhost:8080/GeodeticDatum/api/mcp?protocolVersion=0.1&client=demo-shell"
-```
+### Streamable HTTP handshake
+
+1. **POST an `initialize` request** (must advertise both `application/json` and `text/event-stream` in the `Accept` header):
+
+   ```bash
+   curl -i \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json,text/event-stream" \
+     -d '{
+           "jsonrpc": "2.0",
+           "id": "1",
+           "method": "initialize",
+           "params": {
+             "protocolVersion": "2025-06-18",
+             "clientInfo": { "name": "demo-shell", "version": "1.0.0" }
+           }
+         }' \
+     http://localhost:8080/GeodeticDatum/api/mcp
+   ```
+
+   The response includes `Mcp-Session-Id`—keep that value.
+
+2. **Open the SSE stream** with `Mcp-Session-Id`:
+
+   ```bash
+   curl -N \
+     -H "Accept: text/event-stream" \
+     -H "Mcp-Session-Id: <session id>" \
+     http://localhost:8080/GeodeticDatum/api/mcp
+   ```
+
+3. **Send tool calls** via POST, again including `Accept: application/json,text/event-stream` and the same `Mcp-Session-Id`.
+
+### WebSocket transport
+
+Connect to `ws://localhost:8080/GeodeticDatum/api/mcp/ws` with an MCP client (for example the official MCP CLI). The handshake is handled for you.
+
+Registered tools mirror the REST endpoints (CRUD for spheroids, datums, conversion sets, plus conversions and ping).
 ## Usage Examples
 
 - List geodetic datums (REST): `GET /GeodeticDatum/api/GeodeticDatum`
@@ -87,5 +122,6 @@ The current work has been funded by the Research Council of Norway and Industry 
 Eric Cayeux — NORCE Energy Modelling and Automation
 
 Gilles Pelfrene — NORCE Energy Modelling and Automation
+
 
 

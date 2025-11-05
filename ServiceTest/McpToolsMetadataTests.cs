@@ -20,7 +20,6 @@ public class McpToolsMetadataTests
 
     private ServiceProvider _provider = default!;
     private Dictionary<Type, IMcpTool> _toolLookup = default!;
-    private McpToolRegistry _registry = default!;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -33,11 +32,8 @@ public class McpToolsMetadataTests
             services.AddSingleton(typeof(IMcpTool), type);
         }
 
-        services.AddSingleton<McpToolRegistry>();
-
         _provider = services.BuildServiceProvider();
         _toolLookup = _provider.GetServices<IMcpTool>().ToDictionary(t => t.GetType());
-        _registry = _provider.GetRequiredService<McpToolRegistry>();
     }
 
     [OneTimeTearDown]
@@ -81,13 +77,6 @@ public class McpToolsMetadataTests
         Assert.That(tool.InputSchema, Is.Null.Or.InstanceOf<JsonNode>());
     }
 
-    [Test]
-    public void Registry_lists_all_registered_tools()
-    {
-        var registryNames = _registry.DescribeTools().Select(t => t.Name).ToList();
-        var toolNames = _toolLookup.Values.Select(t => t.Name).ToList();
-        Assert.That(registryNames, Is.EquivalentTo(toolNames));
-    }
 }
 
 [TestFixture]

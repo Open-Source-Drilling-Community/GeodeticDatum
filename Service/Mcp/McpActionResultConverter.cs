@@ -7,6 +7,8 @@ namespace NORCE.Drilling.GeodeticDatum.Service.Mcp;
 
 internal static class McpActionResultConverter
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+
     public static JsonObject FromActionResult<T>(ActionResult<T> actionResult)
     {
         return Build(actionResult.Result, actionResult.Value);
@@ -26,7 +28,11 @@ internal static class McpActionResultConverter
 
         if (payload is not null)
         {
-            response["data"] = JsonSerializer.SerializeToNode(payload, payload.GetType(), McpJson.Default);
+            response["data"] = payload switch
+            {
+                JsonNode node => node.DeepClone(),
+                _ => JsonSerializer.SerializeToNode(payload, payload.GetType(), SerializerOptions)
+            };
         }
 
         return response;

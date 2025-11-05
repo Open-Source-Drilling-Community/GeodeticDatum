@@ -2,7 +2,7 @@
 
 Exposes a REST API for managing spheroids, geodetic datums, and batch conversions, backed by SQLite and powered by the core geodetic math from the Model project.
 
-It also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent-style integrations over SSE, WebSockets, or HTTP POST.
+It also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` (Streamable HTTP transport) and `/GeodeticDatum/api/mcp/ws` (WebSockets) for agent integrations.
 
 Base path: `/GeodeticDatum/api` (see `Service/Program.cs`). Swagger UI is served under `/GeodeticDatum/api/swagger`.
 
@@ -36,32 +36,50 @@ Notes:
 
 ## MCP Server
 
-The service also exposes a Model Context Protocol surface under the same `/GeodeticDatum/api` base path. Use it to integrate MCP-compliant clients with the geodetic tools.
-- `GET /GeodeticDatum/api/mcp` (SSE) establishes a session and streams server messages such as `sessionCreated`, `toolsList`, and tool results.
-- `GET /GeodeticDatum/api/mcp/ws` (WebSocket) provides a bidirectional transport for clients that prefer WebSockets over SSE/POST.
-- `POST /GeodeticDatum/api/mcp` accepts client-to-server envelopes (for example `ping` or `invokeTool`) when using the SSE transport.
+The MCP surface lives alongside the REST API:
 
-Handshake tips:
-- Provide optional `protocolVersion`, `client`, `clientVersion`, and `sessionId` via query string or the matching `X-MCP-*` headers (defaults to protocol version 0.1).
-- `X-MCP-Capabilities` can hold a JSON object describing client capabilities; invalid JSON is ignored.
-- Registered tools live under `Service/Mcp/Tools/*` and expose CRUD operations and conversions for spheroids, datums, and conversion sets, plus a connectivity ping.
+- Streamable HTTP transport: `/GeodeticDatum/api/mcp`
+- WebSocket transport: `/GeodeticDatum/api/mcp/ws`
 
-Example session bootstrap:
+### Streamable HTTP quick-start
 
-```bash
-curl -N \
-  -H "Accept: text/event-stream" \
-  "http://localhost:8080/GeodeticDatum/api/mcp?protocolVersion=0.1&client=demo-shell"
-```
+1. **POST `initialize`** and advertise both `application/json` and `text/event-stream` in `Accept`:
 
-Send a ping over the open session:
+   ```bash
+   curl -i \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json,text/event-stream" \
+     -d '{
+           "jsonrpc": "2.0",
+           "id": "1",
+           "method": "initialize",
+           "params": {
+             "protocolVersion": "2025-06-18",
+             "clientInfo": { "name": "demo-shell", "version": "1.0.0" }
+           }
+         }' \
+     http://localhost:5002/GeodeticDatum/api/mcp
+   ```
 
-```bash
-curl -X POST \
-  -H "Content-Type: application/json" \
-  -d '{ "sessionId": "<session-id>", "type": "ping", "requestId": "1" }' \
-  http://localhost:8080/GeodeticDatum/api/mcp
-```
+   Capture the `Mcp-Session-Id` header from the response.
+
+2. **Open the SSE stream**:
+
+   ```bash
+   curl -N \
+     -H "Accept: text/event-stream" \
+     -H "Mcp-Session-Id: <session id>" \
+     http://localhost:5002/GeodeticDatum/api/mcp
+   ```
+
+3. **Send tool calls** with additional POST requests. Each POST must include `Accept: application/json,text/event-stream`, the `Mcp-Session-Id` header, and a JSON-RPC payload (e.g., `tools.call`).
+
+### WebSocket transport
+
+Use any MCP-aware WebSocket client against `ws://localhost:5002/GeodeticDatum/api/mcp/ws`. The server handles the handshake and streams responses over the socket.
+
+All MCP tools are defined under `Service/Mcp/Tools/*` and correspond to the REST CRUD operations, conversions, and ping diagnostics.
 
 ## Usage Examples
 
@@ -106,7 +124,7 @@ Example (create a Spheroid):
 
 ```bash
 curl -X POST \
-  http://localhost:8080/GeodeticDatum/api/Spheroid \
+  http://localhost:5002/GeodeticDatum/api/Spheroid \
   -H "Content-Type: application/json" \
   -d '{
         "MetaInfo": { "ID": "00000000-0000-0000-0000-000000000001" },
@@ -144,5 +162,6 @@ Build integration:
 - Base path is enforced in `Service/Program.cs` with `app.UsePathBase("/GeodeticDatum/api")`.
 - Reverse proxy friendly via `UseForwardedHeaders` (proto only).
 - On DB structure mismatch, `SqlConnectionManager` generates a timestamped backup and recreates tables.
+
 
 
