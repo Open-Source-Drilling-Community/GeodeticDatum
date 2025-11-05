@@ -14,7 +14,7 @@ internal sealed class GetAllGeodeticDatumMcpTool : GeodeticDatumToolBase
 
     public override string Name => "geodetic_datum.get_all";
 
-    public override string Description => "Retrieve all geodetic datum records including heavy data.";
+    public override string Description => "Retrieve all geodetic datum complete records, i.e., heavy data.";
 
     public override JsonNode? InputSchema => null;
 

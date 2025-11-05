@@ -14,7 +14,7 @@ internal sealed class GetAllGeodeticConversionSetMcpTool : GeodeticConversionSet
 
     public override string Name => "geodetic_conversion_set.get_all";
 
-    public override string Description => "Retrieve all geodetic conversion set records including heavy data.";
+    public override string Description => "Retrieve all geodetic conversion set complete records, i.e., heavy data.";
 
     public override JsonNode? InputSchema => null;
 

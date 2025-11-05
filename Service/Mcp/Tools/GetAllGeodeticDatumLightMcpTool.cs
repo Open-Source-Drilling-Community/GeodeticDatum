@@ -14,7 +14,7 @@ internal sealed class GetAllGeodeticDatumLightMcpTool : GeodeticDatumToolBase
 
     public override string Name => "geodetic_datum.get_all_light";
 
-    public override string Description => "Retrieve all geodetic datum light records.";
+    public override string Description => "Retrieve all geodetic datum in the form of light records.";
 
     public override JsonNode? InputSchema => null;
 

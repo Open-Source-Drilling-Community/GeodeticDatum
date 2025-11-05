@@ -14,7 +14,7 @@ internal sealed class GetAllGeodeticConversionSetLightMcpTool : GeodeticConversi
 
     public override string Name => "geodetic_conversion_set.get_all_light";
 
-    public override string Description => "Retrieve all geodetic conversion set light records.";
+    public override string Description => "Retrieve all geodetic conversion set in the form of light records.";
 
     public override JsonNode? InputSchema => null;
 

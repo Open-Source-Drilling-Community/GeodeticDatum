@@ -14,7 +14,7 @@ internal sealed class GetAllSpheroidMcpTool : SpheroidToolBase
 
     public override string Name => "spheroid.get_all";
 
-    public override string Description => "Retrieve all spheroid records including heavy data.";
+    public override string Description => "Retrieve all spheroid complete records, i.e., heavy data.";
 
     public override JsonNode? InputSchema => null;
 

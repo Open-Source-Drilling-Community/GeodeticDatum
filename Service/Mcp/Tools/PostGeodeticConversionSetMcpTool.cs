@@ -39,7 +39,7 @@ internal sealed class PostGeodeticConversionSetMcpTool : GeodeticConversionSetTo
 
     public override string Name => "geodetic_conversion_set.create";
 
-    public override string Description => "Create a geodetic conversion set using the controller.";
+    public override string Description => "Create a geodetic conversion set using the GeodeticConversionSetController.";
 
     public override JsonNode? InputSchema => Schema;
 
