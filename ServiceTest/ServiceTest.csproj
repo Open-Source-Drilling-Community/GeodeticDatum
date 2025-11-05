@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Service\Service.csproj" />
     <ProjectReference Include="..\ModelSharedOut\ModelSharedOut.csproj" />
   </ItemGroup>
 

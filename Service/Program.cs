@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
 using NORCE.Drilling.GeodeticDatum.Service;
 using NORCE.Drilling.GeodeticDatum.Service.Managers;
+using NORCE.Drilling.GeodeticDatum.Service.Mcp;
+using NORCE.Drilling.GeodeticDatum.Service.Mcp.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +37,40 @@ builder.Services.AddSwaggerGen(config =>
     config.CustomSchemaIds(type => type.FullName);
 });
 
+// MCP server registrations
+builder.Services.AddSingleton<IMcpTool, PingMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllSpheroidIdsMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllSpheroidMetaInfoMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllSpheroidMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetSpheroidByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PostSpheroidMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PutSpheroidByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, DeleteSpheroidByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, FindSpheroidIdByNameMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticDatumIdsMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticDatumMetaInfoMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticDatumLightMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticDatumMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetGeodeticDatumByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PostGeodeticDatumMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PutGeodeticDatumByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, DeleteGeodeticDatumByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, FindGeodeticDatumIdByNameMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticConversionSetIdsMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticConversionSetMetaInfoMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticConversionSetLightMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetAllGeodeticConversionSetMcpTool>();
+builder.Services.AddSingleton<IMcpTool, GetGeodeticConversionSetByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PostGeodeticConversionSetMcpTool>();
+builder.Services.AddSingleton<IMcpTool, PutGeodeticConversionSetByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, DeleteGeodeticConversionSetByIdMcpTool>();
+builder.Services.AddSingleton<IMcpTool, ConvertGeodeticDatumCoordinateMcpTool>();
+builder.Services.AddSingleton<McpToolRegistry>();
+builder.Services.AddSingleton<McpServer>();
+
 var app = builder.Build();
 
 var basePath = "/GeodeticDatum/api";
-var scheme = "http";
 
 app.UsePathBase(basePath);
 
@@ -58,6 +91,10 @@ else
 
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseWebSockets(new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(25)
+});
 app.UseRouting();
 
 string relativeSwaggerPath = "/swagger/merged/swagger.json";
@@ -79,6 +116,7 @@ app.UseCors(cors => cors
                         .AllowCredentials()
            );
 
+app.MapMcpEndpoints();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
