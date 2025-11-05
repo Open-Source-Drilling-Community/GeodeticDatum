@@ -2,6 +2,8 @@
 
 Exposes a REST API for managing spheroids, geodetic datums, and batch conversions, backed by SQLite and powered by the core geodetic math from the Model project.
 
+It also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent-style integrations over SSE, WebSockets, or HTTP POST.
+
 Base path: `/GeodeticDatum/api` (see `Service/Program.cs`). Swagger UI is served under `/GeodeticDatum/api/swagger`.
 
 Container image name: `norcedrillinggeodeticdatumservice`.
@@ -31,6 +33,35 @@ Docker build/run:
 Notes:
 - The service writes the SQLite file and usage history under `home/` at the repository root (see `SqlConnectionManager.HOME_DIRECTORY`, `Model/UsageStatistics.cs`). Mount this folder when containerized.
 - Forwarded headers are enabled for `X-Forwarded-Proto` to play well behind reverse proxies.
+
+## MCP Server
+
+The service also exposes a Model Context Protocol surface under the same `/GeodeticDatum/api` base path. Use it to integrate MCP-compliant clients with the geodetic tools.
+- `GET /GeodeticDatum/api/mcp` (SSE) establishes a session and streams server messages such as `sessionCreated`, `toolsList`, and tool results.
+- `GET /GeodeticDatum/api/mcp/ws` (WebSocket) provides a bidirectional transport for clients that prefer WebSockets over SSE/POST.
+- `POST /GeodeticDatum/api/mcp` accepts client-to-server envelopes (for example `ping` or `invokeTool`) when using the SSE transport.
+
+Handshake tips:
+- Provide optional `protocolVersion`, `client`, `clientVersion`, and `sessionId` via query string or the matching `X-MCP-*` headers (defaults to protocol version 0.1).
+- `X-MCP-Capabilities` can hold a JSON object describing client capabilities; invalid JSON is ignored.
+- Registered tools live under `Service/Mcp/Tools/*` and expose CRUD operations and conversions for spheroids, datums, and conversion sets, plus a connectivity ping.
+
+Example session bootstrap:
+
+```bash
+curl -N \
+  -H "Accept: text/event-stream" \
+  "http://localhost:8080/GeodeticDatum/api/mcp?protocolVersion=0.1&client=demo-shell"
+```
+
+Send a ping over the open session:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{ "sessionId": "<session-id>", "type": "ping", "requestId": "1" }' \
+  http://localhost:8080/GeodeticDatum/api/mcp
+```
 
 ## Usage Examples
 
@@ -113,4 +144,5 @@ Build integration:
 - Base path is enforced in `Service/Program.cs` with `app.UsePathBase("/GeodeticDatum/api")`.
 - Reverse proxy friendly via `UseForwardedHeaders` (proto only).
 - On DB structure mismatch, `SqlConnectionManager` generates a timestamped backup and recreates tables.
+
 

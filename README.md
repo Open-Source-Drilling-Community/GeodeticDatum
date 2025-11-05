@@ -9,7 +9,7 @@ A .NET 8 solution providing geodetic datum computations and management via a RES
 ## Projects
 
 - Model: core types and algorithms (spheroids, datums, conversions, octree).
-- Service: ASP.NET Core API exposing CRUD and conversion endpoints; persists to SQLite under `home/`.
+- Service: ASP.NET Core API exposing CRUD and conversion endpoints; persists to SQLite under `home/`; also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent integrations.
 - ModelSharedOut: generator that merges OpenAPI inputs and produces a C# client + merged JSON.
 - WebApp: Blazor Server UI that consumes the Service using the generated client.
 - ModelTest: NUnit tests for Model algorithms and built-ins.
@@ -29,6 +29,17 @@ Notes
 - WebApp base path: `/GeodeticDatum/webapp`.
 - Service writes SQLite DB and stats under `home/` at repo root. Mount this folder when containerizing.
 
+## MCP Server
+
+The Service project exposes a Model Context Protocol surface alongside the REST API. MCP clients can connect over server-sent events (`GET /GeodeticDatum/api/mcp`), WebSockets (`GET /GeodeticDatum/api/mcp/ws`), or send envelopes via HTTP POST (`POST /GeodeticDatum/api/mcp`). On handshake the server responds with the registered tools that mirror the Spheroid, GeodeticDatum, and GeodeticConversionSet CRUD endpoints and conversions, making the same functionality available to agent-style integrations.
+
+Example SSE session setup:
+
+```bash
+curl -N \
+  -H "Accept: text/event-stream" \
+  "http://localhost:8080/GeodeticDatum/api/mcp?protocolVersion=0.1&client=demo-shell"
+```
 ## Usage Examples
 
 - List geodetic datums (REST): `GET /GeodeticDatum/api/GeodeticDatum`
@@ -77,6 +88,4 @@ Eric Cayeux — NORCE Energy Modelling and Automation
 
 Gilles Pelfrene — NORCE Energy Modelling and Automation
 
-Andrew Holsaeter — NORCE Energy Modelling and Automation
 
-Lucas Volpi — NORCE Energy Modelling and Automation
