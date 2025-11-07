@@ -6,10 +6,11 @@ namespace ServiceTest
     public class GeodeticDatumApiTests
     {
         // testing outside Visual Studio requires using http port (https faces authentication issues both in console and on github)
-        //private static string host = "http://localhost:8080/";
-        private static string host = "https://localhost:5001/";
-        //private static string host = "https://localhost:44368/";
-        //private static string host = "http://localhost:54949/";
+        //private static string host = "https://localhost:5001/";
+        //private static string host = "http://localhost:5002/";
+        private static string host = "http://localhost:8080/";
+        //private static string host = "https://dev.DigiWells.no/";
+        //private static string host = "https://app.DigiWells.no/";
         private static HttpClient httpClient;
         private static Client nSwagClient;
 

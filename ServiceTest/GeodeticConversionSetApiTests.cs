@@ -5,7 +5,11 @@ namespace ServiceTest
 {
     public class GeodeticConversionSetApiTests
     {
-        private static string host = "https://localhost:5001/";
+        //private static string host = "https://localhost:5001/";
+        //private static string host = "http://localhost:5002/";
+        private static string host = "http://localhost:8080/";
+        //private static string host = "https://dev.DigiWells.no/";
+        //private static string host = "https://app.DigiWells.no/";
         private static HttpClient httpClient = null!;
         private static Client client = null!;
 
