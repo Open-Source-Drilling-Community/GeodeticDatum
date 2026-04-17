@@ -1,9 +1,10 @@
-﻿@page "/GeodeticDatum"
+@page "/GeodeticDatum"
 @inject ILogger<GeodeticDatumMain> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
-<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
-                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+<MudUnitAndReferenceChoiceTag HttpHost=@Api.HostNameUnitConversion
+                              HttpBasePath=@Api.HostBasePathUnitConversion
                               HttpController="UnitSystem/"
                               UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
@@ -70,9 +71,9 @@
             currentGeodeticDatum = null;
 
             // Starting all loading tasks asynchronously
-            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + APIUtils.HostNameGeodeticDatum);
-            var geodeticDatumTask = APIUtils.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
-            var spheroidTask = APIUtils.ClientGeodeticDatum.GetAllSpheroidAsync();
+            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + Api.HostNameGeodeticDatum);
+            var geodeticDatumTask = Api.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
+            var spheroidTask = Api.ClientGeodeticDatum.GetAllSpheroidAsync();
 
             List<Task> loadingTaskList = new List<Task> { geodeticDatumTask, spheroidTask };
 
@@ -135,7 +136,7 @@
     {
         try
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = Api.HostNameGeodeticDatum, HttpHostBasePath = Api.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             GeodeticDatum currentGeodeticDatum = new()
                 {
@@ -146,7 +147,7 @@
                     LastModificationDate = creationDate,
 
                 };
-            await APIUtils.ClientGeodeticDatum.PostGeodeticDatumAsync(currentGeodeticDatum);
+            await Api.ClientGeodeticDatum.PostGeodeticDatumAsync(currentGeodeticDatum);
             logger.LogInformation("GeodeticDatum posted successfully");
             Snackbar.Add("GeodeticDatum posted successfully", Severity.Success);
             await OnInitializedAsync();
@@ -173,7 +174,7 @@
     {
         try
         {
-            currentGeodeticDatum = await APIUtils.ClientGeodeticDatum.GetGeodeticDatumByIdAsync(id);
+            currentGeodeticDatum = await Api.ClientGeodeticDatum.GetGeodeticDatumByIdAsync(id);
             if (currentGeodeticDatum != null)
             {
                 isHiddenMainPanel = true;
@@ -196,7 +197,7 @@
     {
         try
         {
-            await APIUtils.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(id);
+            await Api.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(id);
             await OnInitializedAsync();
         }
         catch (Exception ex)
@@ -211,7 +212,7 @@
         {
             foreach (GeodeticDatum geodeticDatum in selectedGeodeticDatumList)
             {
-                await APIUtils.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(geodeticDatum.MetaInfo.ID);
+                await Api.ClientGeodeticDatum.DeleteGeodeticDatumByIdAsync(geodeticDatum.MetaInfo.ID);
             }
             await OnInitializedAsync();
         }
@@ -264,3 +265,4 @@
         await OnInitializedAsync();
     }
 }
+

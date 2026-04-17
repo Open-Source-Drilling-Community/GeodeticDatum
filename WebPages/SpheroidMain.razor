@@ -1,9 +1,10 @@
-﻿@page "/Spheroid"
+@page "/Spheroid"
 @inject ILogger<SpheroidMain> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
-<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
-                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+<MudUnitAndReferenceChoiceTag HttpHost=@Api.HostNameUnitConversion
+                              HttpBasePath=@Api.HostBasePathUnitConversion
                               HttpController="UnitSystem/"
                               UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
@@ -69,8 +70,8 @@
             currentSpheroid = null;
 
             // Starting all loading tasks asynchronously
-            logger.LogInformation("Trying to load list of Spheroid from client: " + APIUtils.HostNameGeodeticDatum);
-            var spheroidTask = APIUtils.ClientGeodeticDatum.GetAllSpheroidAsync();
+            logger.LogInformation("Trying to load list of Spheroid from client: " + Api.HostNameGeodeticDatum);
+            var spheroidTask = Api.ClientGeodeticDatum.GetAllSpheroidAsync();
 
             List<Task> loadingTaskList = new List<Task> { spheroidTask };
 
@@ -113,7 +114,7 @@
     {
         try
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = Api.HostNameGeodeticDatum, HttpHostBasePath = Api.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticDatum/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             Spheroid currentSpheroid = new()
                 {
@@ -133,7 +134,7 @@
                     },
                     IsSemiMinorAxisSet = true
                 };
-            await APIUtils.ClientGeodeticDatum.PostSpheroidAsync(currentSpheroid);
+            await Api.ClientGeodeticDatum.PostSpheroidAsync(currentSpheroid);
             logger.LogInformation("Spheroid posted successfully");
             Snackbar.Add("Spheroid posted successfully", Severity.Success);
             await OnInitializedAsync();
@@ -160,7 +161,7 @@
     {
         try
         {
-            currentSpheroid = await APIUtils.ClientGeodeticDatum.GetSpheroidByIdAsync(id);
+            currentSpheroid = await Api.ClientGeodeticDatum.GetSpheroidByIdAsync(id);
             if (currentSpheroid != null)
             {
                 isHiddenMainPanel = true;
@@ -183,7 +184,7 @@
     {
         try
         {
-            await APIUtils.ClientGeodeticDatum.DeleteSpheroidByIdAsync(id);
+            await Api.ClientGeodeticDatum.DeleteSpheroidByIdAsync(id);
             await OnInitializedAsync();
         }
         catch (Exception ex)
@@ -198,7 +199,7 @@
         {
             foreach (Spheroid spheroid in selectedSpheroidList)
             {
-                await APIUtils.ClientGeodeticDatum.DeleteSpheroidByIdAsync(spheroid.MetaInfo.ID);
+                await Api.ClientGeodeticDatum.DeleteSpheroidByIdAsync(spheroid.MetaInfo.ID);
             }
             await OnInitializedAsync();
         }
@@ -250,3 +251,4 @@
         await OnInitializedAsync();
     }
 }
+

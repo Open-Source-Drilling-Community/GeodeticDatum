@@ -1,5 +1,6 @@
-﻿@page "/Statistics"
+@page "/Statistics"
 @inject ILogger<StatisticsMain> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
 @if (statistics_ == null)
@@ -54,7 +55,7 @@ else
     {
         try
         {
-            statistics_ = await APIUtils.ClientGeodeticDatum.GetGeodeticDatumUsageStatisticsAsync();
+            statistics_ = await Api.ClientGeodeticDatum.GetGeodeticDatumUsageStatisticsAsync();
             if (statistics_ != null)
             {
                 totalCount_ = 0;
@@ -330,3 +331,4 @@ else
     }
 
 }
+

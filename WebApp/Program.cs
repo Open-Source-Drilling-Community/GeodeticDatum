@@ -1,9 +1,16 @@
 using MudBlazor;
 using MudBlazor.Services;
+using NORCE.Drilling.GeodeticDatum.WebApp;
+using NORCE.Drilling.GeodeticDatum.WebPages;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+WebPagesHostConfiguration webPagesConfiguration = new()
+{
+    GeodeticDatumHostURL = builder.Configuration["GeodeticDatumHostURL"] ?? string.Empty,
+    UnitConversionHostURL = builder.Configuration["UnitConversionHostURL"] ?? string.Empty,
+};
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices(config =>
@@ -17,30 +24,22 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
+builder.Services.AddSingleton<IGeodeticDatumWebPagesConfiguration>(webPagesConfiguration);
+builder.Services.AddSingleton<IGeodeticDatumAPIUtils, GeodeticDatumAPIUtils>();
 
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-// This needs to match with what is defined in "charts/<helm-chart-name>/templates/values.yaml ingress.Path
 app.UsePathBase("/GeodeticDatum/webapp");
 
-if (!String.IsNullOrEmpty(builder.Configuration["GeodeticDatumHostURL"]))
-    NORCE.Drilling.GeodeticDatum.WebApp.Configuration.GeodeticDatumHostURL = builder.Configuration["GeodeticDatumHostURL"];
-if (!String.IsNullOrEmpty(builder.Configuration["UnitConversionHostURL"]))
-    NORCE.Drilling.GeodeticDatum.WebApp.Configuration.UnitConversionHostURL = builder.Configuration["UnitConversionHostURL"];
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.MapBlazorHub();

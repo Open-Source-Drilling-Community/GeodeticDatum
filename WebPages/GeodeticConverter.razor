@@ -1,9 +1,10 @@
-﻿@page "/GeodeticConverter"
+@page "/GeodeticConverter"
 @inject ILogger<GeodeticConverter> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
-<MudUnitAndReferenceChoiceTag HttpHost=@APIUtils.HostNameUnitConversion
-                              HttpBasePath=@APIUtils.HostBasePathUnitConversion
+<MudUnitAndReferenceChoiceTag HttpHost=@Api.HostNameUnitConversion
+                              HttpBasePath=@Api.HostBasePathUnitConversion
                               HttpController="UnitSystem/"
                               UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
@@ -16,7 +17,7 @@
         <MudForm>
             <MudPaper Class="p-4 mb-4" Elevation="2">
                 <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
-                    <MudText Typo="Typo.h6" Class="mb-2">WGS84 → Geodetic Datum</MudText>
+                    <MudText Typo="Typo.h6" Class="mb-2">WGS84 ? Geodetic Datum</MudText>
                     <MudGrid>
                         <MudItem xs="12" sm="6" md="6" lg="6">
                             <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (WGS84)"
@@ -97,7 +98,7 @@
             </MudPaper>
 
             <MudPaper Class="p-4" Elevation="2">
-                <MudText Typo="Typo.h6" Class="mb-2">Geodetic Datum → WGS84</MudText>
+                <MudText Typo="Typo.h6" Class="mb-2">Geodetic Datum ? WGS84</MudText>
                 <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
 
                     <MudGrid>
@@ -183,7 +184,7 @@
 </MudUnitAndReferenceChoiceTag>
 
 @code {
-    // Input fields for WGS84 → Datum
+    // Input fields for WGS84 ? Datum
     private double? latitudeFromWGS84;
     private double? longitudeFromWGS84;
     private double? verticalDepthFromWGS84;
@@ -192,7 +193,7 @@
     private double? longitudeToTargetDatum;
     private double? verticalDepthToTargetDatum;
 
-    // Input fields for Datum → WGS84
+    // Input fields for Datum ? WGS84
     private GeodeticDatum? sourceDatum;
     private double? latitudeFromDatum;
     private double? longitudeFromDatum;
@@ -209,7 +210,7 @@
     {
         if (latitudeFromWGS84 != null && longitudeFromWGS84 != null && verticalDepthFromWGS84 != null && targetDatum != null)
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = Api.HostNameGeodeticDatum, HttpHostBasePath = Api.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             GeodeticConversionSet conversionSet = new()
             {
@@ -230,8 +231,8 @@
                 VerticalDepthWGS84 = verticalDepthFromWGS84,
             }
         };
-            APIUtils.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
-            GeodeticConversionSet? calculatedConversionSet = APIUtils.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
+            Api.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
+            GeodeticConversionSet? calculatedConversionSet = Api.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
             if (calculatedConversionSet != null &&
                 calculatedConversionSet.GeodeticCoordinates != null &&
                 calculatedConversionSet.GeodeticCoordinates.Count > 0 &&
@@ -249,7 +250,7 @@
                 logger.LogWarning("The conversion failed.");
                 Snackbar.Add("The conversion failed.", Severity.Warning);
             }
-            APIUtils.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
+            Api.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
         }
         else
         {
@@ -261,7 +262,7 @@
     {
         if (latitudeFromDatum != null && longitudeFromDatum != null && verticalDepthFromDatum != null && sourceDatum != null)
         {
-            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = APIUtils.HostNameGeodeticDatum, HttpHostBasePath = APIUtils.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
+            MetaInfo metaInfo = new() { ID = Guid.NewGuid(), HttpHostName = Api.HostNameGeodeticDatum, HttpHostBasePath = Api.HostBasePathGeodeticDatum, HttpEndPoint = "GeodeticConversionSet/" };
             DateTimeOffset creationDate = DateTimeOffset.UtcNow;
             GeodeticConversionSet conversionSet = new()
             {
@@ -281,8 +282,8 @@
                 VerticalDepthDatum = verticalDepthFromDatum,
             }
         };
-            APIUtils.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
-            GeodeticConversionSet? calculatedConversionSet = APIUtils.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
+            Api.ClientGeodeticDatum.PostGeodeticConversionSetAsync(conversionSet).Wait();
+            GeodeticConversionSet? calculatedConversionSet = Api.ClientGeodeticDatum.GetGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).GetAwaiter().GetResult();
             if (calculatedConversionSet != null &&
                 calculatedConversionSet.GeodeticCoordinates != null &&
                 calculatedConversionSet.GeodeticCoordinates.Count > 0 &&
@@ -300,7 +301,7 @@
                 logger.LogWarning("The conversion failed.");
                 Snackbar.Add("The conversion failed.", Severity.Warning);
             }
-            APIUtils.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
+            Api.ClientGeodeticDatum.DeleteGeodeticConversionSetByIdAsync(conversionSet.MetaInfo.ID).Wait();
         }
         else
         {
@@ -314,8 +315,8 @@
         try
         {
             // Starting all loading tasks asynchronously
-            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + APIUtils.HostNameGeodeticDatum);
-            var geodeticDatumTask = APIUtils.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
+            logger.LogInformation("Trying to load list of GeodeticDatum from client: " + Api.HostNameGeodeticDatum);
+            var geodeticDatumTask = Api.ClientGeodeticDatum.GetAllGeodeticDatumAsync();
 
             List<Task> loadingTaskList = new List<Task> { geodeticDatumTask };
 
@@ -354,3 +355,4 @@
     }
 
 }
+

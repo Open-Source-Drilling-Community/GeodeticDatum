@@ -1,5 +1,6 @@
-﻿@implements IUnitAwareComponent
+@implements IUnitAwareComponent
 @inject ILogger<SpheroidEdit> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
 <MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Spheroid</MudText>
@@ -298,7 +299,7 @@
                         spheroid.InverseFlattening = new() { DiracDistributionValue = new() { Value = InverseFlattening } };
                         spheroid.IsInverseFlatteningSet = true;
                     }
-                    await APIUtils.ClientGeodeticDatum.PutSpheroidByIdAsync(CurrentSpheroid.MetaInfo.ID, spheroid);
+                    await Api.ClientGeodeticDatum.PutSpheroidByIdAsync(CurrentSpheroid.MetaInfo.ID, spheroid);
                     logger.LogInformation("Updated the Spheroid successfully");
                     Snackbar.Add("Updated the Spheroid successfully", Severity.Success);
                 }

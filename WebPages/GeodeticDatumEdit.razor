@@ -1,5 +1,6 @@
-﻿@implements IUnitAwareComponent
+@implements IUnitAwareComponent
 @inject ILogger<GeodeticDatumEdit> logger
+@inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
 
 <MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Geodetic Datum</MudText>
@@ -228,7 +229,7 @@
                                 RotationZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
                                 ScaleFactor = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = scaleFactor } },
                             };
-                        await APIUtils.ClientGeodeticDatum.PutGeodeticDatumByIdAsync(CurrentGeodeticDatum.MetaInfo.ID, geodeticDatum);
+                        await Api.ClientGeodeticDatum.PutGeodeticDatumByIdAsync(CurrentGeodeticDatum.MetaInfo.ID, geodeticDatum);
                         logger.LogInformation("Updated the GeodeticDatum successfully");
                         Snackbar.Add("Updated the GeodeticDatum successfully", Severity.Success);
                     }
