@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <RootNamespace>NORCE.Drilling.GeodeticDatum.WebPages</RootNamespace>
+	<AssemblyName>NORCE.Drilling.GeodeticDatum.WebPages</AssemblyName>
+	<RootNamespace>NORCE.Drilling.GeodeticDatum.WebPages</RootNamespace>
     <PackageId>NORCE.Drilling.GeodeticDatum.WebPages</PackageId>
     <Title>NORCE.Drilling.GeodeticDatum.WebPages</Title>
     <Authors>Eric Cayeux</Authors>
@@ -17,7 +18,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/Open-Source-Drilling-Community/GeodeticDatum</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
