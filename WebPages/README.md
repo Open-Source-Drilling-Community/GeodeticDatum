@@ -2,7 +2,7 @@
 
 Reusable Razor class library for the Geodetic Datum web UI.
 
-It contains the `SpheroidMain`, `SpheroidEdit`, `GeodeticDatumMain`, `GeodeticDatumEdit`, `GeodeticConverter`, and `StatisticsMain` pages together with the supporting API and UI utility code they depend on.
+It contains the `SpheroidMain`, `SpheroidEdit`, `GeodeticDatumMain`, `GeodeticDatumEdit`, `GeodeticConverter`, and `StatisticsGeodeticDatum` pages together with the supporting API and UI utility code they depend on.
 
 ## Package contents
 
