@@ -30,7 +30,8 @@ builder.Services.AddSingleton<IGeodeticDatumAPIUtils, GeodeticDatumAPIUtils>();
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-app.UsePathBase("/GeodeticDatum/webapp");
+var basePath = "/geodeticdatum/webapp";
+app.UsePathBase(basePath);
 
 if (!app.Environment.IsDevelopment())
 {
@@ -46,3 +47,4 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+

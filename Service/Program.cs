@@ -83,7 +83,7 @@ builder.Services.AddLegacyMcpTool<ConvertGeodeticDatumCoordinateMcpTool>();
 
 var app = builder.Build();
 
-var basePath = "/GeodeticDatum/api";
+var basePath = "/geodeticdatum/api";
 
 app.UsePathBase(basePath);
 
@@ -135,3 +135,4 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
