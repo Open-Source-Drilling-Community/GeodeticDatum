@@ -431,7 +431,7 @@ namespace NORCE.Drilling.GeodeticDatum.Model
             {
                 double sinLat = SMath.Sin(latitude);
                 double squaredEccentricity = spheroid.SquaredEccentricity.ScalarValue!.Value;
-                return spheroid.SemiMajorAxis.ScalarValue!.Value / SMath.Sqrt((1.0 - squaredEccentricity * squaredEccentricity * sinLat * sinLat));
+                return spheroid.SemiMajorAxis.ScalarValue!.Value / SMath.Sqrt(1.0 - squaredEccentricity * sinLat * sinLat);
             }
             else
             {
@@ -481,10 +481,10 @@ namespace NORCE.Drilling.GeodeticDatum.Model
                 double cosLat = SMath.Cos(latitude);
                 double sinLat = SMath.Sin(latitude);
                 double cosLon = SMath.Cos(longitude);
-                //double sinLon = SMath.Sin(longitude);
+                double sinLon = SMath.Sin(longitude);
                 double n = NormalRadius(spheroid, latitude);
                 x = (n + elevation) * cosLat * cosLon;
-                y = (n + elevation) * cosLat * sinLat;
+                y = (n + elevation) * cosLat * sinLon;
                 z = (n * (1 - spheroid.SquaredEccentricity.ScalarValue!.Value) + elevation) * sinLat;
             }
         }
