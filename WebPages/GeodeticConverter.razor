@@ -17,7 +17,7 @@
         <MudForm>
             <MudPaper Class="p-4 mb-4" Elevation="2">
                 <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
-                    <MudText Typo="Typo.h6" Class="mb-2">WGS84 ? Geodetic Datum</MudText>
+                    <MudText Typo="Typo.h6" Class="mb-2">WGS84 to Geodetic Datum</MudText>
                     <MudGrid>
                         <MudItem xs="12" sm="6" md="6" lg="6">
                             <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal Latitude (WGS84)"
@@ -98,8 +98,8 @@
             </MudPaper>
 
             <MudPaper Class="p-4" Elevation="2">
-                <MudText Typo="Typo.h6" Class="mb-2">Geodetic Datum ? WGS84</MudText>
                 <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
+                    <MudText Typo="Typo.h6" Class="mb-2">Geodetic Datum to WGS84</MudText>
 
                     <MudGrid>
                         <MudItem xs="12" sm="6" md="6" lg="6">
@@ -184,7 +184,7 @@
 </MudUnitAndReferenceChoiceTag>
 
 @code {
-    // Input fields for WGS84 ? Datum
+    // Input fields for WGS84 to Datum
     private double? latitudeFromWGS84;
     private double? longitudeFromWGS84;
     private double? verticalDepthFromWGS84;
@@ -193,7 +193,7 @@
     private double? longitudeToTargetDatum;
     private double? verticalDepthToTargetDatum;
 
-    // Input fields for Datum ? WGS84
+    // Input fields for Datum to WGS84
     private GeodeticDatum? sourceDatum;
     private double? latitudeFromDatum;
     private double? longitudeFromDatum;

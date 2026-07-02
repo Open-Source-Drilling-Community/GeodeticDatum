@@ -11,7 +11,7 @@ A .NET 8 solution providing geodetic datum computations and management via a RES
 - Model: core types and algorithms (spheroids, datums, conversions, octree).
 - Service: ASP.NET Core API exposing CRUD and conversion endpoints; persists to SQLite under `home/`; also hosts a Model Context Protocol (MCP) server at `/GeodeticDatum/api/mcp` for agent integrations using the Streamable HTTP transport and `/GeodeticDatum/api/mcp/ws` for WebSockets.
 - ModelSharedOut: generator that merges OpenAPI inputs and produces a C# client + merged JSON.
-- WebApp: Blazor Server UI that consumes the Service using the generated client.
+- WebApp: Blazor Server UI that consumes the Service using the generated client. The spheroid and geodetic datum editors use MudBlazor expansion panels for description and configuration data, unit-aware inputs for physical quantities, and Save/Close workflows with unsaved-change confirmation.
 - ModelTest: NUnit tests for Model algorithms and built-ins.
 - ServiceTest: NUnit tests hitting the running Service via the generated client.
 - home/: local data folder (SQLite DB `home/GeodeticDatum.db`, usage history `home/history.json`).
@@ -90,7 +90,7 @@ Registered tools mirror the REST endpoints (CRUD for spheroids, datums, conversi
           "InverseFlattening": { "ScalarValue": 298.257223563 }
         }'
   ```
-- Convert WGS84 → datum via batch conversion (UI): navigate to `/GeodeticConverter` in the WebApp.
+- Convert WGS84 to datum, or datum to WGS84, via batch conversion (UI): navigate to `/GeodeticConverter` in the WebApp.
 - Programmatic client (C#):
   ```csharp
   using NORCE.Drilling.GeodeticDatum.ModelShared;

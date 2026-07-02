@@ -43,8 +43,16 @@ Kubernetes (Helm):
 Navigation (see `WebApp/Pages`):
 - `Spheroid` (`/Spheroid`): list, add, edit, and delete spheroids.
 - `GeodeticDatum` (`/GeodeticDatum`): list, add, edit, and delete datums.
-- `GeodeticConverter` (`/GeodeticConverter`): convert WGS84 ↔ datum using the API’s batch conversion.
+- `GeodeticConverter` (`/GeodeticConverter`): convert WGS84 to a geodetic datum or a geodetic datum to WGS84 using the API batch conversion.
 - `Statistics` (`/Statistics`): view usage stats.
+
+Editor behavior:
+- Spheroid and geodetic datum editors use `Description` and `Configuration` expansion panels.
+- Physical quantities are edited with unit-aware Mud components.
+- `Save` persists changes through the REST API; `Close` returns to the list.
+- If the editor contains unsaved changes, `Close` asks for confirmation before discarding them.
+
+The geodetic converter has two sections: `WGS84 to Geodetic Datum` and `Geodetic Datum to WGS84`.
 
 Example: convert WGS84 to a target datum in the UI
 - Go to `/GeodeticConverter`

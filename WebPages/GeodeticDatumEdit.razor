@@ -2,63 +2,88 @@
 @inject ILogger<GeodeticDatumEdit> logger
 @inject IGeodeticDatumAPIUtils Api
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudText Class="mt-4 mb-4" Typo="Typo.h6">Edit Geodetic Datum</MudText>
-<MudContainer Class="d-flex flex-row mt-4 mb-4">
-    <MudButton Class="me-1" Variant="Variant.Filled" Color="Color.Success" OnClick="Update">Update</MudButton>
-    <MudButton Class="me-1" Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+<MudContainer Class="d-flex flex-row align-center mt-4 mb-4">
+    <MudButton Class="me-1" Variant="Variant.Filled" Color="Color.Success" OnClick="Save">Save</MudButton>
+    <MudButton Class="me-1" Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditorAsync">Close</MudButton>
 </MudContainer>
 
 <MudExpansionPanels Class="mt-4 mb-4">
     <MudExpansionPanel Text="Description" Expanded="true">
-        <MudContainer Class="d-flex flex-column" style="max-width: 500px; width: 100%;">
-            <MudTextField @bind-Value="@name" Label="Name" Variant="Variant.Filled"></MudTextField>
-            <MudTextField @bind-Value="@descr" Label="Description" Variant="Variant.Filled"></MudTextField>
+        <MudGrid>
+            <MudItem xs="12" md="3">
+                <MudTextField @bind-Value="@name" Label="Name" Required="true" ShrinkLabel />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="@descr" Label="Description" ShrinkLabel />
+            </MudItem>
             @if (Spheroids != null && Spheroids.Count > 0)
             {
-                <MudSelect @bind-Value="@spheroid" Label="Spheroid" Variant="Variant.Filled" ToStringFunc="@(s => s?.Name)">
-                    @foreach (var sph in Spheroids)
-                    {
-                        <MudSelectItem Value="@sph">@sph.Name</MudSelectItem>
-                    }
-                </MudSelect>
+                <MudItem xs="12" md="3">
+                    <MudSelect @bind-Value="@spheroid" Label="Spheroid" ShrinkLabel ToStringFunc="@(s => s?.Name)">
+                        @foreach (var sph in Spheroids)
+                        {
+                            <MudSelectItem Value="@sph">@sph.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
             }
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Delta X"
-                                       QuantityName="LengthStandard"
-                                       SIValueNullable="deltaX"
-                                       SIValueNullableChanged="@(val => deltaX = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Delta Y"
-                                       QuantityName="LengthStandard"
-                                       SIValueNullable="deltaY"
-                                       SIValueNullableChanged="@(val => deltaY = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Delta Z"
-                                       QuantityName="LengthStandard"
-                                       SIValueNullable="deltaZ"
-                                       SIValueNullableChanged="@(val => deltaZ = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Rotation X"
-                                       QuantityName="PlaneAngleDrilling"
-                                       SIValueNullable="rotationX"
-                                       SIValueNullableChanged="@(val => rotationX = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Rotation Y"
-                                       QuantityName="PlaneAngleDrilling"
-                                       SIValueNullable="rotationY"
-                                       SIValueNullableChanged="@(val => rotationY = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Rotation Z"
-                                       QuantityName="PlaneAngleDrilling"
-                                       SIValueNullable="rotationZ"
-                                       SIValueNullableChanged="@(val => rotationZ = val)" />
-            <MudInputWithUnitAdornment VariantType="Variant.Text"
-                                       QuantityLabel="Scale Factor"
-                                       QuantityName="DimensionLessStandard"
-                                       SIValueNullable="scaleFactor"
-                                       SIValueNullableChanged="@(val => scaleFactor = val)" />
-        </MudContainer>
+        </MudGrid>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Configuration">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Delta X"
+                                           QuantityName="LengthStandard"
+                                           SIValueNullable="deltaX"
+                                           SIValueNullableChanged="@(val => deltaX = val)" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Delta Y"
+                                           QuantityName="LengthStandard"
+                                           SIValueNullable="deltaY"
+                                           SIValueNullableChanged="@(val => deltaY = val)" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Delta Z"
+                                           QuantityName="LengthStandard"
+                                           SIValueNullable="deltaZ"
+                                           SIValueNullableChanged="@(val => deltaZ = val)" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Rotation X"
+                                           QuantityName="PlaneAngleDrilling"
+                                           SIValueNullable="rotationX"
+                                           SIValueNullableChanged="@(val => rotationX = val)" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Rotation Y"
+                                           QuantityName="PlaneAngleDrilling"
+                                           SIValueNullable="rotationY"
+                                           SIValueNullableChanged="@(val => rotationY = val)" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Rotation Z"
+                                           QuantityName="PlaneAngleDrilling"
+                                           SIValueNullable="rotationZ"
+                                           SIValueNullableChanged="@(val => rotationZ = val)" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudInputWithUnitAdornment VariantType="Variant.Text"
+                                           QuantityLabel="Scale Factor"
+                                           QuantityName="DimensionLessStandard"
+                                           SIValueNullable="scaleFactor"
+                                           SIValueNullableChanged="@(val => scaleFactor = val)" />
+            </MudItem>
+        </MudGrid>
     </MudExpansionPanel>
 </MudExpansionPanels>
 @code {
@@ -85,6 +110,7 @@
     private double? rotationY;
     private double? rotationZ;
     private double? scaleFactor;
+    private string? cleanGeodeticDatumSnapshot_;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,6 +188,7 @@
                 logger.LogError("Current GeodeticDatum is null or badly formed");
                 Snackbar.Add("Current GeodeticDatum is null or badly formed", Severity.Error);
             }
+            MarkGeodeticDatumClean();
         }
         catch (Exception ex)
         {
@@ -176,7 +203,7 @@
 
     }
 
-    private async Task Update()
+    private async Task Save()
     {
         try
         {
@@ -213,25 +240,12 @@
                     }
                     else
                     {
-                        GeodeticDatum geodeticDatum = new()
-                            {
-                                MetaInfo = CurrentGeodeticDatum.MetaInfo,
-                                Name = name,
-                                Description = descr,
-                                CreationDate = CurrentGeodeticDatum.CreationDate,
-                                LastModificationDate = DateTimeOffset.UtcNow,
-                                Spheroid = spheroid,
-                                DeltaX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaX } },
-                                DeltaY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaY } },
-                                DeltaZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
-                                RotationX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationX } },
-                                RotationY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationY } },
-                                RotationZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
-                                ScaleFactor = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = scaleFactor } },
-                            };
+                        GeodeticDatum geodeticDatum = BuildEditedGeodeticDatum(DateTimeOffset.UtcNow);
                         await Api.ClientGeodeticDatum.PutGeodeticDatumByIdAsync(CurrentGeodeticDatum.MetaInfo.ID, geodeticDatum);
+                        CurrentGeodeticDatum = await Api.ClientGeodeticDatum.GetGeodeticDatumByIdAsync(CurrentGeodeticDatum.MetaInfo.ID);
+                        MarkGeodeticDatumClean();
                         logger.LogInformation("Updated the GeodeticDatum successfully");
-                        Snackbar.Add("Updated the GeodeticDatum successfully", Severity.Success);
+                        Snackbar.Add("Saved the GeodeticDatum successfully", Severity.Success);
                     }
                 }
             }
@@ -248,9 +262,85 @@
         }
     }
 
-    private void Cancel()
+    private async Task CloseEditorAsync()
     {
+        if (HasUnsavedGeodeticDatumChanges() && !await ConfirmCloseWithoutSavingAsync())
+        {
+            return;
+        }
+
         OnUpdate?.Invoke();
+    }
+
+    private GeodeticDatum BuildEditedGeodeticDatum(DateTimeOffset lastModificationDate)
+    {
+        if (CurrentGeodeticDatum?.MetaInfo == null)
+        {
+            throw new InvalidOperationException("Current GeodeticDatum is null or badly formed");
+        }
+
+        return new()
+        {
+            MetaInfo = CurrentGeodeticDatum.MetaInfo,
+            Name = name,
+            Description = descr,
+            CreationDate = CurrentGeodeticDatum.CreationDate,
+            LastModificationDate = lastModificationDate,
+            Spheroid = spheroid,
+            DeltaX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaX } },
+            DeltaY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaY } },
+            DeltaZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = deltaZ } },
+            RotationX = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationX } },
+            RotationY = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationY } },
+            RotationZ = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = rotationZ } },
+            ScaleFactor = new ScalarDrillingProperty() { DiracDistributionValue = new DiracDistribution() { Value = scaleFactor } },
+        };
+    }
+
+    private void MarkGeodeticDatumClean()
+    {
+        cleanGeodeticDatumSnapshot_ = BuildGeodeticDatumDirtySnapshot();
+    }
+
+    private bool HasUnsavedGeodeticDatumChanges()
+    {
+        return cleanGeodeticDatumSnapshot_ != null &&
+            !string.Equals(cleanGeodeticDatumSnapshot_, BuildGeodeticDatumDirtySnapshot(), StringComparison.Ordinal);
+    }
+
+    private string BuildGeodeticDatumDirtySnapshot()
+    {
+        return JsonSerializer.Serialize(new
+        {
+            GeodeticDatumId = CurrentGeodeticDatum?.MetaInfo?.ID,
+            Name = name,
+            Description = descr,
+            SpheroidId = spheroid?.MetaInfo?.ID,
+            DeltaX = deltaX,
+            DeltaY = deltaY,
+            DeltaZ = deltaZ,
+            RotationX = rotationX,
+            RotationY = rotationY,
+            RotationZ = rotationZ,
+            ScaleFactor = scaleFactor
+        });
+    }
+
+    private async Task<bool> ConfirmCloseWithoutSavingAsync()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Unsaved changes",
+            "Some changes have not been saved. Close without saving?",
+            yesText: "Close without saving",
+            cancelText: "Stay",
+            options: new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                FullWidth = false,
+                MaxWidth = MaxWidth.ExtraSmall
+            });
+
+        return result == true;
     }
 
 }
