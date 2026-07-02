@@ -1,6 +1,6 @@
 # WebApp — Geodetic Datum UI (Blazor Server)
 
-A Blazor Server UI for interacting with the GeodeticDatum Service. It lets users browse and edit spheroids and geodetic datums, perform conversions between WGS84 and regional datums, and inspect basic usage statistics.
+A Blazor Server UI for interacting with the GeodeticDatum Service. It lets users browse and edit spheroids and geodetic datums, perform conversions between WGS84 and regional datums, run single unit conversions, and inspect basic usage statistics.
 
 Base path: `/GeodeticDatum/webapp` (see `WebApp/Program.cs`).
 
@@ -44,6 +44,7 @@ Navigation (see `WebApp/Pages`):
 - `Spheroid` (`/Spheroid`): list, add, edit, and delete spheroids.
 - `GeodeticDatum` (`/GeodeticDatum`): list, add, edit, and delete datums.
 - `GeodeticConverter` (`/GeodeticConverter`): convert WGS84 to a geodetic datum or a geodetic datum to WGS84 using the API batch conversion.
+- `SingleUnitConversion` (`/SingleUnitConversion`): convert a single value between unit choices exposed by the UnitConversion service.
 - `Statistics` (`/Statistics`): view usage stats.
 
 Editor behavior:
@@ -64,6 +65,7 @@ Example: convert WGS84 to a target datum in the UI
 Internal:
 - `ModelSharedOut`: provides the generated OpenAPI client (`NORCE.Drilling.GeodeticDatum.ModelShared.*`) used in `Shared/APIUtils.cs`.
 - `Service`: backend API the UI calls, expected under `GeodeticDatumHostURL + "GeodeticDatum/api/"`.
+- `OSDC.UnitConversion.WebPages`: reusable single unit conversion page.
 
 NuGet packages (selected):
 - `MudBlazor`: UI components and theming.

@@ -10,6 +10,7 @@ WebPagesHostConfiguration webPagesConfiguration = new()
     GeodeticDatumHostURL = builder.Configuration["GeodeticDatumHostURL"] ?? string.Empty,
     UnitConversionHostURL = builder.Configuration["UnitConversionHostURL"] ?? string.Empty,
 };
+OSDC.UnitConversion.WebPages.Configuration.UnitConversionHostURL = webPagesConfiguration.UnitConversionHostURL;
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

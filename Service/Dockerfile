@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 443
+ENV GEODETICDATUM_EXTERNAL_CONFIG=/home/GeodeticDatum.Service.json
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 

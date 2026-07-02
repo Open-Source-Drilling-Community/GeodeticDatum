@@ -25,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="8.14.0" />
     <PackageReference Include="OSDC.DotnetLibraries.General.DataManagement" Version="2.1.0" />
+    <PackageReference Include="OSDC.UnitConversion.WebPages" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>

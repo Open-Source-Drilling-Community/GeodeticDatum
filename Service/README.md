@@ -26,13 +26,38 @@ Local run:
 - Service listens with base path `/GeodeticDatum/api`. Open Swagger UI at `http://localhost:<port>/GeodeticDatum/api/swagger`.
 
 Docker build/run:
-- Build: `docker build -t norcedrillinggeodeticdatumservice Service` (honors `Dockerfile`)
-- Run: `docker run -p 8080:8080 -e ASPNETCORE_URLS=http://+:8080 -v %CD%/home:/app/home norcedrillinggeodeticdatumservice`
+- Build: `docker build -t norcedrillinggeodeticdatumservice -f Service/Dockerfile .`
+- Run: `docker run -p 8080:8080 -e ASPNETCORE_URLS=http://+:8080 -v %CD%/home:/home norcedrillinggeodeticdatumservice`
 - Open `http://localhost:8080/GeodeticDatum/api/swagger`
 
 Notes:
-- The service writes the SQLite file and usage history under `home/` at the repository root (see `SqlConnectionManager.HOME_DIRECTORY`, `Model/UsageStatistics.cs`). Mount this folder when containerized.
+- The service writes the SQLite file, usage history, optional external configuration, and generated MCP hub instance id under the shared `home/` location. In Docker this is `/home`; mount the repository `home/` folder there, for example `-v %CD%/home:/home`.
+- The Docker image reads optional external configuration from `/home/GeodeticDatum.Service.json`. Override this path with `GEODETICDATUM_EXTERNAL_CONFIG` if needed.
 - Forwarded headers are enabled for `X-Forwarded-Proto` to play well behind reverse proxies.
+
+External configuration example:
+
+```json
+{
+  "McpHub": {
+    "Enabled": true,
+    "HubBaseUrl": "https://mcp-hub.example.com/api",
+    "RegistrationEndpoint": "McpMicroservice",
+    "RetryIntervalSeconds": 60,
+    "PublicBaseUrl": "https://dev.digiwells.no",
+    "ServiceName": "GeodeticDatum",
+    "InstanceId": "",
+    "UnregisterOnShutdown": true
+  }
+}
+```
+
+When `McpHub:Enabled` is true, the service registers itself on the hub with a fixed service type id, a configured or persisted instance id, and MCP endpoint URLs derived from `PublicBaseUrl`:
+
+- `PublicBaseUrl + "/GeodeticDatum/api/mcp"`
+- `PublicBaseUrl` converted to `ws`/`wss` plus `"/GeodeticDatum/api/mcp/ws"`
+
+If `HubBaseUrl` or `PublicBaseUrl` is missing, registration is skipped. If the hub is configured but unreachable, registration is retried every `RetryIntervalSeconds` seconds.
 
 ## MCP Server
 

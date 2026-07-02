@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +14,10 @@ using NORCE.Drilling.GeodeticDatum.Service.Mcp;
 using NORCE.Drilling.GeodeticDatum.Service.Mcp.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string externalConfigPath = builder.Configuration["GEODETICDATUM_EXTERNAL_CONFIG"]
+    ?? Path.Combine(SqlConnectionManager.HOME_DIRECTORY, "GeodeticDatum.Service.json");
+builder.Configuration.AddJsonFile(externalConfigPath, optional: true, reloadOnChange: true);
 
 // registering the manager of SQLite connections through dependency injection
 builder.Services.AddSingleton(sp =>
@@ -36,6 +42,10 @@ builder.Services.AddSwaggerGen(config =>
 {
     config.CustomSchemaIds(type => type.FullName);
 });
+
+builder.Services.Configure<McpHubOptions>(builder.Configuration.GetSection(McpHubOptions.SectionName));
+builder.Services.AddHttpClient(nameof(McpHubRegistrationService));
+builder.Services.AddHostedService<McpHubRegistrationService>();
 
 // MCP server registrations
 var serverVersion = typeof(SqlConnectionManager).Assembly.GetName().Version?.ToString() ?? "1.0.0";
@@ -80,6 +90,7 @@ builder.Services.AddLegacyMcpTool<PostGeodeticConversionSetMcpTool>();
 builder.Services.AddLegacyMcpTool<PutGeodeticConversionSetByIdMcpTool>();
 builder.Services.AddLegacyMcpTool<DeleteGeodeticConversionSetByIdMcpTool>();
 builder.Services.AddLegacyMcpTool<ConvertGeodeticDatumCoordinateMcpTool>();
+builder.Services.AddLegacyMcpTool<GetGeodeticDatumUsageStatisticsMcpTool>();
 
 var app = builder.Build();
 
