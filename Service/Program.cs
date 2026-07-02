@@ -35,7 +35,8 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         JsonSettings.ApplyTo(options.JsonSerializerOptions);
-    });
+    })
+    .AddControllersAsServices();
 
 // serialize using short name rather than full names
 builder.Services.AddSwaggerGen(config =>
